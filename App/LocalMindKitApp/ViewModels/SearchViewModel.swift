@@ -13,6 +13,7 @@ final class SearchViewModel {
 
     private var service: QueryService?
     private var searchTask: Task<Void, Never>?
+    private var cache: [String: [SearchResult]] = [:]
 
     func configure(service: QueryService) {
         self.service = service
@@ -38,8 +39,16 @@ final class SearchViewModel {
                 results = []
                 return
             }
+            let cacheKey = "\(q.lowercased())|\(selectedTypes.map(\.rawValue).sorted().joined(separator: ","))"
+            if let cached = cache[cacheKey] {
+                results = cached
+                errorMessage = nil
+                return
+            }
             let fileTypes = selectedTypes.isEmpty ? nil : selectedTypes
-            results = try await service.search(q, options: .init(limit: 40, fileTypes: fileTypes))
+            let fetched = try await service.search(q, options: .init(limit: 40, fileTypes: fileTypes))
+            cache[cacheKey] = fetched
+            results = fetched
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
