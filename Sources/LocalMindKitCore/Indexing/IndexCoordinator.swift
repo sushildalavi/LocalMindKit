@@ -50,6 +50,12 @@ public actor IndexCoordinator {
         items: [IngestItem],
         progress: (@Sendable (IndexProgress) async -> Void)? = nil
     ) async throws -> IndexSummary {
+        // Honor cancellation before doing any work. Because this method is
+        // actor-isolated, a caller that cancels its task right after invoking
+        // index(...) is guaranteed to be observed here (the actor hop is a
+        // suspension point), so an already-cancelled batch stops immediately.
+        try Task.checkCancellation()
+
         if items.isEmpty { return .init() }
 
         var summary = IndexSummary()
