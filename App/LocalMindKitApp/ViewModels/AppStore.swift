@@ -30,8 +30,11 @@ final class AppStore {
     private static func defaultDatabaseURL() -> URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSTemporaryDirectory())
-        let folder = base.appendingPathComponent("LocalMindKit", isDirectory: true)
+        var folder = base.appendingPathComponent("LocalMindKit", isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? folder.setResourceValues(values)
         return folder.appendingPathComponent("index.sqlite3")
     }
 }
