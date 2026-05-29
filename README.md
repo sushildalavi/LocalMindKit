@@ -18,7 +18,15 @@ LocalMindKit is a privacy-first iOS app that makes screenshots and imported PDFs
 ```bash
 swift build
 swift test
+```
+
+Run the iOS app:
+```bash
+open LocalMindKit.xcodeproj
+```
+
+Regenerate the project from spec (optional):
+```bash
 brew install xcodegen
 xcodegen generate
-open LocalMindKit.xcodeproj
 ```
