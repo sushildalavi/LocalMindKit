@@ -34,8 +34,10 @@ struct IndexScreen: View {
                         HStack(spacing: 12) {
                             Button("Run Index Demo") { viewModel.startMockRun() }
                                 .buttonStyle(.borderedProminent)
+                                .accessibilityLabel("Run index demo")
                             Button("Stop") { viewModel.cancel() }
                                 .buttonStyle(.bordered)
+                                .accessibilityLabel("Stop indexing")
                         }
                     }
                     .padding(16)

@@ -38,6 +38,7 @@ struct PrivacyScreen: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
+                        .accessibilityLabel("Delete entire local index")
 
                         if let message = viewModel.message {
                             Text(message)
