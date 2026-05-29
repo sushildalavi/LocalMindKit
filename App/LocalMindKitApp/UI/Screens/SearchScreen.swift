@@ -9,6 +9,10 @@ struct SearchScreen: View {
             ZStack {
                 AppTheme.pageGradient.ignoresSafeArea()
                 VStack(spacing: 16) {
+                    Text("On-device text and phrase search across screenshots and imported PDFs.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     SearchInput(text: $viewModel.query) {
                         viewModel.runSearchDebounced()
                     }
