@@ -13,9 +13,14 @@ concurrency:
 jobs:
   core-tests:
     name: Core engine (build + test)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select Swift 6 toolchain
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - name: Show toolchain
         run: swift --version
