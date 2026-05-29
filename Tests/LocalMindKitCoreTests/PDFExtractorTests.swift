@@ -12,6 +12,17 @@ final class PDFExtractorTests: XCTestCase {
         XCTAssertTrue(extracted.contains("fixture"))
     }
 
+    func testExtractTextFromURL() throws {
+        let data = try makeFixturePDFData(text: "URL based extraction check")
+        let url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("fixture-\(UUID().uuidString).pdf")
+        try data.write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let extracted = PDFExtractor().extractText(from: url).lowercased()
+        XCTAssertTrue(extracted.contains("url"))
+        XCTAssertTrue(extracted.contains("extraction"))
+    }
+
     private func makeFixturePDFData(text: String) throws -> Data {
         let mutable = NSMutableData()
         guard let consumer = CGDataConsumer(data: mutable as CFMutableData) else {
