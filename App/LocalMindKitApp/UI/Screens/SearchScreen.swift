@@ -12,7 +12,9 @@ struct SearchScreen: View {
                     SearchInput(text: $viewModel.query) {
                         viewModel.runSearchDebounced()
                     }
+                    .accessibilityLabel("Search input")
                     TypeFilterChips(selection: $viewModel.selectedTypes)
+                        .accessibilityLabel("File type filters")
 
                     if viewModel.isSearching {
                         ProgressView("Searching on device…")
@@ -33,6 +35,8 @@ struct SearchScreen: View {
                         List(viewModel.results) { hit in
                             ResultCard(hit: hit)
                             .listRowBackground(Color.white.opacity(0.85))
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("\(hit.displayName), \(hit.fileType.rawValue), relevance \(String(format: "%.2f", hit.score))")
                         }
                         .scrollContentBackground(.hidden)
                         .listStyle(.plain)
