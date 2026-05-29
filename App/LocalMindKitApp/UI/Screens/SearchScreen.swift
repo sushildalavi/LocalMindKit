@@ -12,6 +12,7 @@ struct SearchScreen: View {
                     SearchInput(text: $viewModel.query) {
                         viewModel.runSearchDebounced()
                     }
+                    TypeFilterChips(selection: $viewModel.selectedTypes)
 
                     if viewModel.isSearching {
                         ProgressView("Searching on device…")
