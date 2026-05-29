@@ -1,230 +1,238 @@
-import SwiftUI
 import Photos
+import SwiftUI
 
 struct IndexScreen: View {
-    @Bindable var viewModel: IndexingViewModel
-    @State private var stats: (files: Int, chunks: Int) = (0, 0)
-    @State private var importing = false
+  @Bindable var viewModel: IndexingViewModel
+  @State private var stats: (files: Int, chunks: Int) = (0, 0)
+  @State private var importing = false
 
-    private var progress: Double {
-        viewModel.total == 0 ? 0 : Double(viewModel.done) / Double(max(viewModel.total, 1))
-    }
-    private var isBusy: Bool { viewModel.state == .indexing }
+  private var progress: Double {
+    viewModel.total == 0 ? 0 : Double(viewModel.done) / Double(max(viewModel.total, 1))
+  }
+  private var isBusy: Bool { viewModel.state == .indexing }
 
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                AppTheme.background.ignoresSafeArea()
-                ScrollView {
-                    VStack(spacing: Spacing.lg) {
-                        heroCard
-                        if viewModel.photoAuthorization == .notDetermined || viewModel.photoAuthorization == .denied {
-                            permissionBanner
-                        }
-                        actions
-                        metrics
-                        demoControls
-                    }
-                    .padding(Spacing.lg)
-                    .animation(Animations.spring, value: viewModel.done)
-                    .animation(Animations.spring, value: viewModel.state)
-                }
-                .refreshable { stats = await viewModel.refreshStats() }
+  var body: some View {
+    NavigationStack {
+      ZStack {
+        AppTheme.background.ignoresSafeArea()
+        ScrollView {
+          VStack(spacing: Spacing.lg) {
+            heroCard
+            if viewModel.photoAuthorization == .notDetermined
+              || viewModel.photoAuthorization == .denied
+            {
+              permissionBanner
             }
-            .navigationTitle("Library")
-            .fileImporter(
-                isPresented: $importing,
-                allowedContentTypes: DocumentImportSource.supportedTypes,
-                allowsMultipleSelection: false
-            ) { result in
-                if case .success(let urls) = result, let url = urls.first {
-                    Haptics.tap()
-                    viewModel.ingestDocument(at: url)
-                }
-            }
-            .task { stats = await viewModel.refreshStats() }
-            .onChange(of: viewModel.state) { _, newValue in
-                if newValue == .complete { Haptics.success() }
-                Task { stats = await viewModel.refreshStats() }
-            }
+            actions
+            metrics
+            demoControls
+          }
+          .padding(Spacing.lg)
+          .animation(Animations.spring, value: viewModel.done)
+          .animation(Animations.spring, value: viewModel.state)
         }
-    }
-
-    // MARK: - Hero
-
-    private var heroCard: some View {
-        VStack(spacing: Spacing.lg) {
-            if isBusy {
-                ProgressRing(progress: progress)
-            } else {
-                ZStack {
-                    Circle().fill(heroTint.opacity(0.12)).frame(width: 116, height: 116)
-                    Image(systemName: heroGlyph)
-                        .font(.system(size: 44, weight: .semibold))
-                        .foregroundStyle(heroTint)
-                }
-                .accessibilityHidden(true)
-            }
-            VStack(spacing: 4) {
-                HStack(spacing: Spacing.sm) {
-                    Circle().fill(stateColor).frame(width: 8, height: 8)
-                    Text(stateLabel).font(Typography.section)
-                }
-                Text(viewModel.summaryText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                if isBusy {
-                    Text("\(viewModel.done) of \(viewModel.total)")
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                }
-            }
+        .refreshable { stats = await viewModel.refreshStats() }
+      }
+      .navigationTitle("Library")
+      .fileImporter(
+        isPresented: $importing,
+        allowedContentTypes: DocumentImportSource.supportedTypes,
+        allowsMultipleSelection: false
+      ) { result in
+        if case .success(let urls) = result, let url = urls.first {
+          Haptics.tap()
+          viewModel.ingestDocument(at: url)
         }
-        .frame(maxWidth: .infinity)
-        .lmkCard(padding: Spacing.xl)
+      }
+      .task { stats = await viewModel.refreshStats() }
+      .onChange(of: viewModel.state) { _, newValue in
+        if newValue == .complete { Haptics.success() }
+        Task { stats = await viewModel.refreshStats() }
+      }
     }
+  }
 
-    private var heroTint: Color {
-        switch viewModel.state {
-        case .complete: return .green
-        case .failed: return .red
-        case .cancelled: return .gray
-        case .idle, .indexing: return AppTheme.accent
+  // MARK: - Hero
+
+  private var heroCard: some View {
+    VStack(spacing: Spacing.lg) {
+      if isBusy {
+        ProgressRing(progress: progress)
+      } else {
+        ZStack {
+          Circle().fill(heroTint.opacity(0.12)).frame(width: 116, height: 116)
+          Image(systemName: heroGlyph)
+            .font(.system(size: 44, weight: .semibold))
+            .foregroundStyle(heroTint)
         }
-    }
-    private var heroGlyph: String {
-        switch viewModel.state {
-        case .complete: return "checkmark.seal.fill"
-        case .failed: return "exclamationmark.triangle.fill"
-        case .cancelled: return "xmark.circle.fill"
-        case .idle: return stats.files > 0 ? "tray.full.fill" : "tray.fill"
-        case .indexing: return "arrow.triangle.2.circlepath"
+        .accessibilityHidden(true)
+      }
+      VStack(spacing: 4) {
+        HStack(spacing: Spacing.sm) {
+          Circle().fill(stateColor).frame(width: 8, height: 8)
+          Text(stateLabel).font(Typography.section)
         }
-    }
-
-    private var stateColor: Color {
-        switch viewModel.state {
-        case .indexing: return .orange
-        case .complete: return .green
-        case .failed: return .red
-        case .cancelled: return .gray
-        case .idle: return .secondary
+        Text(viewModel.summaryText)
+          .font(.subheadline)
+          .foregroundStyle(.secondary)
+          .multilineTextAlignment(.center)
+        if isBusy {
+          Text("\(viewModel.done) of \(viewModel.total)")
+            .font(.caption.monospacedDigit())
+            .foregroundStyle(.secondary)
         }
+      }
     }
-    private var stateLabel: String {
-        switch viewModel.state {
-        case .idle: return "Ready"
-        case .indexing: return "Indexing…"
-        case .complete: return "Up to date"
-        case .cancelled: return "Cancelled"
-        case .failed: return "Failed"
+    .frame(maxWidth: .infinity)
+    .lmkCard(padding: Spacing.xl)
+  }
+
+  private var heroTint: Color {
+    switch viewModel.state {
+    case .complete: return .green
+    case .failed: return .red
+    case .cancelled: return .gray
+    case .idle, .indexing: return AppTheme.accent
+    }
+  }
+  private var heroGlyph: String {
+    switch viewModel.state {
+    case .complete: return "checkmark.seal.fill"
+    case .failed: return "exclamationmark.triangle.fill"
+    case .cancelled: return "xmark.circle.fill"
+    case .idle: return stats.files > 0 ? "tray.full.fill" : "tray.fill"
+    case .indexing: return "arrow.triangle.2.circlepath"
+    }
+  }
+
+  private var stateColor: Color {
+    switch viewModel.state {
+    case .indexing: return .orange
+    case .complete: return .green
+    case .failed: return .red
+    case .cancelled: return .gray
+    case .idle: return .secondary
+    }
+  }
+  private var stateLabel: String {
+    switch viewModel.state {
+    case .idle: return "Ready"
+    case .indexing: return "Indexing…"
+    case .complete: return "Up to date"
+    case .cancelled: return "Cancelled"
+    case .failed: return "Failed"
+    }
+  }
+
+  // MARK: - Permission banner
+
+  private var permissionBanner: some View {
+    HStack(spacing: Spacing.md) {
+      IconTile(symbol: "photo.on.rectangle.angled", tint: .orange, size: 38)
+      VStack(alignment: .leading, spacing: 2) {
+        Text("Allow Photos Access").font(.subheadline.weight(.semibold))
+        Text("Needed to index your screenshots on-device.")
+          .font(.caption).foregroundStyle(.secondary)
+      }
+      Spacer()
+      Button("Allow") {
+        Haptics.tap()
+        viewModel.requestPhotoAccess()
+      }
+      .font(.subheadline.weight(.semibold))
+      .buttonStyle(.borderedProminent)
+      .tint(AppTheme.accent)
+    }
+    .lmkCard(padding: Spacing.md)
+  }
+
+  // MARK: - Actions
+
+  private var actions: some View {
+    VStack(spacing: Spacing.md) {
+      Button {
+        Haptics.tap()
+        viewModel.ingestScreenshots()
+      } label: {
+        Label(isBusy ? "Indexing…" : "Index Screenshots", systemImage: "photo.stack")
+      }
+      .buttonStyle(PrimaryButtonStyle())
+      .disabled(isBusy)
+
+      Button {
+        importing = true
+      } label: {
+        Label("Import Document", systemImage: "doc.badge.plus")
+      }
+      .buttonStyle(SecondaryButtonStyle())
+      .disabled(isBusy)
+
+      if isBusy {
+        Button(role: .cancel) {
+          Haptics.warning()
+          viewModel.cancel()
+        } label: {
+          Label("Stop", systemImage: "stop.fill")
+            .frame(maxWidth: .infinity)
         }
+        .buttonStyle(SecondaryButtonStyle(tint: .red))
+      }
     }
+  }
 
-    // MARK: - Permission banner
+  // MARK: - Metrics
 
-    private var permissionBanner: some View {
-        HStack(spacing: Spacing.md) {
-            IconTile(symbol: "photo.on.rectangle.angled", tint: .orange, size: 38)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Allow Photos Access").font(.subheadline.weight(.semibold))
-                Text("Needed to index your screenshots on-device.")
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            Spacer()
-            Button("Allow") {
-                Haptics.tap()
-                viewModel.requestPhotoAccess()
-            }
-            .font(.subheadline.weight(.semibold))
-            .buttonStyle(.borderedProminent)
-            .tint(AppTheme.accent)
+  private var metrics: some View {
+    VStack(alignment: .leading, spacing: Spacing.md) {
+      SectionHeader("Index")
+      LazyVGrid(
+        columns: [
+          GridItem(.flexible(), spacing: Spacing.md),
+          GridItem(.flexible(), spacing: Spacing.md),
+        ],
+        spacing: Spacing.md
+      ) {
+        MetricCard(symbol: "doc.text.fill", value: "\(stats.files)", label: "Files", tint: .blue)
+        MetricCard(symbol: "text.quote", value: "\(stats.chunks)", label: "Chunks", tint: .teal)
+        MetricCard(
+          symbol: "photo.on.rectangle", value: permissionLabel(viewModel.photoAuthorization),
+          label: "Photos", tint: .indigo)
+        MetricCard(symbol: "bolt.fill", value: stateLabel, label: "Status", tint: .orange)
+      }
+    }
+  }
+
+  // MARK: - Demo (debug builds only)
+
+  @ViewBuilder
+  private var demoControls: some View {
+    #if DEBUG
+      HStack {
+        Text("Developer")
+          .font(.caption2.weight(.semibold))
+          .foregroundStyle(.secondary)
+        Spacer()
+        Button("Run Demo") {
+          Haptics.tap()
+          viewModel.startMockRun()
         }
-        .lmkCard(padding: Spacing.md)
+        .font(.subheadline)
+        .frame(minHeight: 44)
+        .tint(AppTheme.accent)
+        .disabled(isBusy)
+      }
+      .padding(.top, Spacing.xs)
+    #endif
+  }
+
+  private func permissionLabel(_ status: PHAuthorizationStatus) -> String {
+    switch status {
+    case .authorized: return "Full"
+    case .limited: return "Limited"
+    case .denied: return "Denied"
+    case .restricted: return "Restricted"
+    case .notDetermined: return "—"
+    @unknown default: return "Unknown"
     }
-
-    // MARK: - Actions
-
-    private var actions: some View {
-        VStack(spacing: Spacing.md) {
-            Button {
-                Haptics.tap()
-                viewModel.ingestScreenshots()
-            } label: {
-                Label(isBusy ? "Indexing…" : "Index Screenshots", systemImage: "photo.stack")
-            }
-            .buttonStyle(PrimaryButtonStyle())
-            .disabled(isBusy)
-
-            Button {
-                importing = true
-            } label: {
-                Label("Import Document", systemImage: "doc.badge.plus")
-            }
-            .buttonStyle(SecondaryButtonStyle())
-            .disabled(isBusy)
-
-            if isBusy {
-                Button(role: .cancel) {
-                    Haptics.warning()
-                    viewModel.cancel()
-                } label: {
-                    Label("Stop", systemImage: "stop.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(SecondaryButtonStyle(tint: .red))
-            }
-        }
-    }
-
-    // MARK: - Metrics
-
-    private var metrics: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            SectionHeader("Index")
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: Spacing.md),
-                                GridItem(.flexible(), spacing: Spacing.md)],
-                      spacing: Spacing.md) {
-                MetricCard(symbol: "doc.text.fill", value: "\(stats.files)", label: "Files", tint: .blue)
-                MetricCard(symbol: "text.quote", value: "\(stats.chunks)", label: "Chunks", tint: .teal)
-                MetricCard(symbol: "photo.on.rectangle", value: permissionLabel(viewModel.photoAuthorization), label: "Photos", tint: .indigo)
-                MetricCard(symbol: "bolt.fill", value: stateLabel, label: "Status", tint: .orange)
-            }
-        }
-    }
-
-    // MARK: - Demo (debug builds only)
-
-    @ViewBuilder
-    private var demoControls: some View {
-        #if DEBUG
-        HStack {
-            Text("Developer")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-            Spacer()
-            Button("Run Demo") {
-                Haptics.tap()
-                viewModel.startMockRun()
-            }
-            .font(.subheadline)
-            .frame(minHeight: 44)
-            .tint(AppTheme.accent)
-            .disabled(isBusy)
-        }
-        .padding(.top, Spacing.xs)
-        #endif
-    }
-
-    private func permissionLabel(_ status: PHAuthorizationStatus) -> String {
-        switch status {
-        case .authorized: return "Full"
-        case .limited: return "Limited"
-        case .denied: return "Denied"
-        case .restricted: return "Restricted"
-        case .notDetermined: return "—"
-        @unknown default: return "Unknown"
-        }
-    }
+  }
 }

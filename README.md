@@ -84,7 +84,9 @@ See [`docs/PRIVACY.md`](docs/PRIVACY.md).
   indexing, PDF/text extraction, query construction, and the network audit),
   plus 1 OCR test skipped (needs a runtime Vision call).
 - **iOS app:** SwiftUI screens + view models + PhotoKit/document sources wired
-  (`App/LocalMindKitApp`). **Pending device verification** — see limitations.
+  (`App/LocalMindKitApp`). Built and run on iPhone 16 simulator (iOS 26.5),
+  with visual smoke testing for the search/detail/library/privacy flows.
+  Physical-device OCR throughput and memory benchmarks are still pending.
 
 ## Benchmarks
 
@@ -102,6 +104,31 @@ search is not the bottleneck. They **exclude OCR/PDF extraction** (the real
 on-device cost), which is the subject of the planned device benchmark
 (OCR ms/image, indexing throughput, memory, p95 search on persisted SQLite,
 skip-unchanged re-index). See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+
+Persisted benchmark harness (JSON + doc auto-update):
+
+```bash
+bash scripts/run_benchmarks.sh \
+  .benchmarks/latest.json \
+  .benchmarks/persisted-index.sqlite \
+  2000 \
+  200
+
+bash scripts/update_benchmarks_doc.sh .benchmarks/latest.json
+```
+
+Optional extraction timing inputs:
+
+```bash
+swift run -c release LocalMindKitBench \
+  --mode run \
+  --output .benchmarks/latest.json \
+  --db-path .benchmarks/persisted-index.sqlite \
+  --corpus-size 2000 \
+  --query-runs 200 \
+  --ocr-samples /absolute/path/to/ocr_samples \
+  --pdf-samples /absolute/path/to/pdf_samples
+```
 
 ## Quick start
 
@@ -124,9 +151,8 @@ brew install xcodegen && xcodegen generate
 
 ## Known limitations
 
-- This dev environment is command-line-tools only (no Xcode/iOS SDK), so the
-  iOS app target is not yet built/run on a simulator or device. UI is committed
-  but not visually verified.
+- Current visual verification is simulator-only (iPhone 16, iOS 26.5). Physical
+  device verification and profiling are still pending.
 - Search is keyword-first FTS5; semantic embeddings are deferred to a later phase.
 - Benchmarks are host-only so far; device OCR/indexing benchmarks are pending.
 
@@ -134,7 +160,7 @@ brew install xcodegen && xcodegen generate
 
 1. Build and run the iOS app in Xcode; record a demo GIF (Photos permission →
    index screenshots → search → preview → privacy dashboard → delete index);
-   add screenshots here.
+   add/update media in this README.
 2. Device benchmark: OCR ms/image, indexing throughput, memory, p50/p95 search
    over persisted SQLite, at 50/100/500 screenshots.
 3. On-device semantic search (local embeddings) + true hybrid ranking; claim

@@ -15,4 +15,5 @@ DerivedData/
 
 # Local scratch / generated artifacts
 .artifacts/
+.benchmarks/
 *.sqlite3
