@@ -54,7 +54,17 @@ struct IndexScreen: View {
 
     private var heroCard: some View {
         VStack(spacing: Spacing.lg) {
-            ProgressRing(progress: progress)
+            if isBusy {
+                ProgressRing(progress: progress)
+            } else {
+                ZStack {
+                    Circle().fill(heroTint.opacity(0.12)).frame(width: 116, height: 116)
+                    Image(systemName: heroGlyph)
+                        .font(.system(size: 44, weight: .semibold))
+                        .foregroundStyle(heroTint)
+                }
+                .accessibilityHidden(true)
+            }
             VStack(spacing: 4) {
                 HStack(spacing: Spacing.sm) {
                     Circle().fill(stateColor).frame(width: 8, height: 8)
@@ -73,6 +83,24 @@ struct IndexScreen: View {
         }
         .frame(maxWidth: .infinity)
         .lmkCard(padding: Spacing.xl)
+    }
+
+    private var heroTint: Color {
+        switch viewModel.state {
+        case .complete: return .green
+        case .failed: return .red
+        case .cancelled: return .gray
+        case .idle, .indexing: return AppTheme.accent
+        }
+    }
+    private var heroGlyph: String {
+        switch viewModel.state {
+        case .complete: return "checkmark.seal.fill"
+        case .failed: return "exclamationmark.triangle.fill"
+        case .cancelled: return "xmark.circle.fill"
+        case .idle: return stats.files > 0 ? "tray.full.fill" : "tray.fill"
+        case .indexing: return "arrow.triangle.2.circlepath"
+        }
     }
 
     private var stateColor: Color {

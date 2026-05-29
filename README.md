@@ -19,6 +19,15 @@ flows — nothing leaves the device.
 > planned next phase and will only be described as "semantic" once they
 > measurably improve retrieval quality on a labeled query set.
 
+## Screenshots
+
+Running on iOS 26.5 (iPhone 16 simulator).
+
+| Search | Result detail | Library | Privacy |
+|:------:|:-------------:|:-------:|:-------:|
+| ![Search results](docs/images/search.png) | ![Result detail](docs/images/detail.png) | ![Library / indexing](docs/images/library.png) | ![Privacy dashboard](docs/images/privacy.png) |
+| Highlighted FTS5 results with relevance + sort | Full extracted text, on-device | Indexing status, sources, metrics | "Nothing leaves your device" |
+
 ## Why this design
 
 iOS sandboxing prevents arbitrary filesystem crawling, so LocalMindKit works

@@ -1,53 +1,53 @@
 import SwiftUI
 import LocalMindKitCore
 
-/// A production-grade search result row: leading type tile, title, highlighted
-/// snippet, a metadata footer (type + relevance), and a chevron affordance.
+/// A premium search-result card: a type-colored accent rail, a tinted glyph
+/// tile, title, highlighted snippet, and a clean metadata footer. Elevated
+/// surface with a soft shadow for depth.
 struct ResultCard: View {
     let hit: SearchResult
 
     var body: some View {
-        HStack(alignment: .top, spacing: Spacing.md) {
-            IconTile(symbol: icon(for: hit.fileType), tint: tint(for: hit.fileType), size: 42)
+        HStack(spacing: 0) {
+            // Type-colored accent rail for visual rhythm down the list.
+            Rectangle()
+                .fill(tint)
+                .frame(width: 4)
 
-            VStack(alignment: .leading, spacing: 5) {
-                Text(hit.displayName)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
+            HStack(alignment: .top, spacing: Spacing.md) {
+                IconTile(symbol: icon, tint: tint, size: 44)
 
-                highlightedSnippet
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(hit.displayName)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
 
-                HStack(spacing: Spacing.sm) {
-                    Text(hit.fileType.rawValue.capitalized)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(tint(for: hit.fileType))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(tint(for: hit.fileType).opacity(0.12), in: Capsule())
+                    highlightedSnippet
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    RelevanceBar(score: min(hit.score, 1))
-
-                    Spacer(minLength: 0)
+                    HStack(spacing: Spacing.sm) {
+                        Text(hit.fileType.rawValue.capitalized)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(tint)
+                            .padding(.horizontal, Spacing.sm)
+                            .padding(.vertical, 3)
+                            .background(tint.opacity(0.12), in: Capsule())
+                        Spacer(minLength: 0)
+                        RelevanceBar(score: min(hit.score, 1))
+                    }
+                    .padding(.top, 2)
                 }
-                .padding(.top, 2)
             }
-
-            Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tertiary)
-                .padding(.top, 6)
+            .padding(Spacing.md)
         }
-        .padding(Spacing.md)
-        .background(AppTheme.surface, in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: Radius.md, style: .continuous)
-                .strokeBorder(AppTheme.hairline.opacity(0.3), lineWidth: 0.5)
-        )
-        .contentShape(Rectangle())
+        .background(AppTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.lg, style: .continuous))
+        .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
+        .contentShape(RoundedRectangle(cornerRadius: Radius.lg, style: .continuous))
     }
 
     /// Bolds the text FTS5 `snippet()` wrapped in `[` `]` so matched terms pop.
@@ -73,8 +73,8 @@ struct ResultCard: View {
         }
     }
 
-    private func icon(for type: FileType) -> String {
-        switch type {
+    private var icon: String {
+        switch hit.fileType {
         case .image: return "photo.fill"
         case .pdf: return "doc.richtext.fill"
         case .text: return "doc.text.fill"
@@ -83,9 +83,8 @@ struct ResultCard: View {
         case .unknown: return "questionmark.square"
         }
     }
-
-    private func tint(for type: FileType) -> Color {
-        switch type {
+    private var tint: Color {
+        switch hit.fileType {
         case .image: return .indigo
         case .pdf: return .red
         case .text: return .blue
@@ -98,15 +97,15 @@ struct ResultCard: View {
 
 /// A small 5-segment relevance meter — clearer than a raw decimal score.
 private struct RelevanceBar: View {
-    let score: Double   // 0...1
+    let score: Double
     private var filled: Int { max(1, Int((score * 5).rounded())) }
 
     var body: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 3) {
             ForEach(0..<5, id: \.self) { i in
                 Capsule()
                     .fill(i < filled ? AppTheme.accent : AppTheme.accent.opacity(0.18))
-                    .frame(width: 10, height: 4)
+                    .frame(width: 11, height: 4)
             }
         }
         .accessibilityLabel("Relevance")

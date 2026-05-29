@@ -13,12 +13,16 @@ struct EmptyStateView: View {
         VStack(spacing: Spacing.lg) {
             ZStack {
                 Circle()
+                    .fill(AppTheme.accent.opacity(0.06))
+                    .frame(width: 116, height: 116)
+                Circle()
                     .fill(AppTheme.accent.opacity(0.12))
-                    .frame(width: 84, height: 84)
+                    .frame(width: 86, height: 86)
                 Image(systemName: symbol)
-                    .font(.system(size: 34, weight: .semibold))
+                    .font(.system(size: 36, weight: .semibold))
                     .foregroundStyle(AppTheme.accent)
             }
+            .accessibilityHidden(true)
 
             VStack(spacing: Spacing.xs) {
                 Text(title)
