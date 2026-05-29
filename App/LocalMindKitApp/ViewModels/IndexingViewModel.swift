@@ -51,9 +51,7 @@ final class IndexingViewModel {
             do {
                 let summary = try await coordinator.index(items: fixtureItems) { [weak self] progress in
                     guard let self else { return }
-                    self.done = progress.done
-                    self.total = progress.total
-                    self.currentItemID = progress.currentExternalID
+                    await self.applyProgress(progress)
                 }
                 guard !Task.isCancelled else {
                     state = .cancelled
@@ -82,6 +80,70 @@ final class IndexingViewModel {
         }
     }
 
+    func ingestScreenshots(limit: Int = 150) {
+        guard let coordinator else { return }
+        activeTask?.cancel()
+        activeTask = Task {
+            state = .indexing
+            done = 0
+            total = 0
+            currentItemID = nil
+            errorMessage = nil
+
+            let auth = await photoSource.requestAuthorization()
+            photoAuthorization = auth
+            guard auth == .authorized || auth == .limited else {
+                state = .failed
+                summaryText = "Photos permission denied."
+                return
+            }
+
+            let assets = photoSource.fetchScreenshotAssets(limit: limit)
+            total = assets.count
+            guard !assets.isEmpty else {
+                state = .complete
+                summaryText = "No screenshots found to index."
+                return
+            }
+
+            var items: [IngestItem] = []
+            items.reserveCapacity(assets.count)
+            for (idx, asset) in assets.enumerated() {
+                if Task.isCancelled {
+                    state = .cancelled
+                    summaryText = "Screenshot indexing cancelled."
+                    return
+                }
+                currentItemID = asset.localIdentifier
+                done = idx
+                if let item = await photoSource.makeIngestItem(asset: asset) {
+                    items.append(item)
+                }
+            }
+
+            do {
+                let summary = try await coordinator.index(items: items) { [weak self] progress in
+                    guard let self else { return }
+                    await self.applyProgress(progress)
+                }
+                guard !Task.isCancelled else {
+                    state = .cancelled
+                    summaryText = "Screenshot indexing cancelled."
+                    return
+                }
+                state = .complete
+                summaryText = "Screenshots indexed: \(summary.indexed), skipped: \(summary.skipped), failed: \(summary.failed)."
+            } catch is CancellationError {
+                state = .cancelled
+                summaryText = "Screenshot indexing cancelled."
+            } catch {
+                state = .failed
+                errorMessage = error.localizedDescription
+                summaryText = "Screenshot indexing failed."
+            }
+        }
+    }
+
     func ingestDocument(at url: URL) {
         guard let coordinator else { return }
         Task {
@@ -90,8 +152,10 @@ final class IndexingViewModel {
                 let item = try documentSource.makeIngestItem(for: persisted)
                 _ = try await coordinator.index(items: [item])
                 summaryText = "Imported and indexed \(persisted.lastPathComponent)."
+                state = .complete
             } catch {
                 errorMessage = error.localizedDescription
+                state = .failed
             }
         }
     }
@@ -101,5 +165,11 @@ final class IndexingViewModel {
         let files = (try? await database.fileCount()) ?? 0
         let chunks = (try? await database.chunkCount()) ?? 0
         return (files, chunks)
+    }
+
+    private func applyProgress(_ progress: IndexProgress) {
+        done = progress.done
+        total = progress.total
+        currentItemID = progress.currentExternalID
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import Photos
 
 struct IndexScreen: View {
     @Bindable var viewModel: IndexingViewModel
@@ -14,6 +15,7 @@ struct IndexScreen: View {
                         StatTile(label: "State", value: viewModel.state.rawValue.capitalized, symbol: "gauge.with.dots.needle.50percent")
                         StatTile(label: "Files Indexed", value: "\(stats.files)", symbol: "doc.text")
                         StatTile(label: "Chunks", value: "\(stats.chunks)", symbol: "text.quote")
+                        StatTile(label: "Photos Permission", value: permissionLabel(viewModel.photoAuthorization), symbol: "photo.on.rectangle")
 
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Progress")
@@ -40,6 +42,10 @@ struct IndexScreen: View {
                                 .buttonStyle(.bordered)
                                 .accessibilityLabel("Stop indexing")
                         }
+                        Button("Index Screenshots") {
+                            viewModel.ingestScreenshots()
+                        }
+                        .buttonStyle(.borderedProminent)
                         Button("Request Photos Access") {
                             viewModel.requestPhotoAccess()
                         }
@@ -67,6 +73,20 @@ struct IndexScreen: View {
             .task {
                 stats = await viewModel.refreshStats()
             }
+            .onChange(of: viewModel.state) { _, _ in
+                Task { stats = await viewModel.refreshStats() }
+            }
+        }
+    }
+
+    private func permissionLabel(_ status: PHAuthorizationStatus) -> String {
+        switch status {
+        case .authorized: return "Authorized"
+        case .limited: return "Limited"
+        case .denied: return "Denied"
+        case .restricted: return "Restricted"
+        case .notDetermined: return "Not Determined"
+        @unknown default: return "Unknown"
         }
     }
 }
