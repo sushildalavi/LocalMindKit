@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import LocalMindKitCore
+import Photos
 
 @Observable
 @MainActor
@@ -19,10 +20,12 @@ final class IndexingViewModel {
     var currentItemID: String?
     var summaryText = "No indexing run yet."
     var errorMessage: String?
+    var photoAuthorization: PHAuthorizationStatus = .notDetermined
 
     private var database: Database?
     private var coordinator: IndexCoordinator?
     private var activeTask: Task<Void, Never>?
+    private let photoSource = PhotoLibrarySource()
 
     func configure(database: Database, coordinator: IndexCoordinator) {
         self.database = database
@@ -70,6 +73,12 @@ final class IndexingViewModel {
 
     func cancel() {
         activeTask?.cancel()
+    }
+
+    func requestPhotoAccess() {
+        Task {
+            photoAuthorization = await photoSource.requestAuthorization()
+        }
     }
 
     func refreshStats() async -> (files: Int, chunks: Int) {

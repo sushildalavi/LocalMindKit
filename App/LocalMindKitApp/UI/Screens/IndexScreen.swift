@@ -39,6 +39,10 @@ struct IndexScreen: View {
                                 .buttonStyle(.bordered)
                                 .accessibilityLabel("Stop indexing")
                         }
+                        Button("Request Photos Access") {
+                            viewModel.requestPhotoAccess()
+                        }
+                        .buttonStyle(.bordered)
                     }
                     .padding(16)
                     .animation(Animations.smoothInOut, value: viewModel.done)
