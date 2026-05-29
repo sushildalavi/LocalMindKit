@@ -26,6 +26,7 @@ final class IndexingViewModel {
     private var coordinator: IndexCoordinator?
     private var activeTask: Task<Void, Never>?
     private let photoSource = PhotoLibrarySource()
+    private let documentSource = DocumentImportSource()
 
     func configure(database: Database, coordinator: IndexCoordinator) {
         self.database = database
@@ -78,6 +79,20 @@ final class IndexingViewModel {
     func requestPhotoAccess() {
         Task {
             photoAuthorization = await photoSource.requestAuthorization()
+        }
+    }
+
+    func ingestDocument(at url: URL) {
+        guard let coordinator else { return }
+        Task {
+            do {
+                let persisted = try documentSource.persistImportedFile(url)
+                let item = try documentSource.makeIngestItem(for: persisted)
+                _ = try await coordinator.index(items: [item])
+                summaryText = "Imported and indexed \(persisted.lastPathComponent)."
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 

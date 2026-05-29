@@ -3,6 +3,7 @@ import SwiftUI
 struct IndexScreen: View {
     @Bindable var viewModel: IndexingViewModel
     @State private var stats: (files: Int, chunks: Int) = (0, 0)
+    @State private var importing = false
 
     var body: some View {
         NavigationStack {
@@ -43,6 +44,10 @@ struct IndexScreen: View {
                             viewModel.requestPhotoAccess()
                         }
                         .buttonStyle(.bordered)
+                        Button("Import Document") {
+                            importing = true
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
                     .padding(16)
                     .animation(Animations.smoothInOut, value: viewModel.done)
@@ -50,6 +55,15 @@ struct IndexScreen: View {
                 }
             }
             .navigationTitle("Index")
+            .fileImporter(
+                isPresented: $importing,
+                allowedContentTypes: DocumentImportSource.supportedTypes,
+                allowsMultipleSelection: false
+            ) { result in
+                if case .success(let urls) = result, let url = urls.first {
+                    viewModel.ingestDocument(at: url)
+                }
+            }
             .task {
                 stats = await viewModel.refreshStats()
             }
