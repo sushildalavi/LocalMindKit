@@ -14,17 +14,32 @@ struct TypeFilterChips: View {
                     Button {
                         if selected { selection.remove(type) } else { selection.insert(type) }
                     } label: {
-                        Text(type.rawValue.uppercased())
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(selected ? AppTheme.ocean.opacity(0.2) : .white.opacity(0.8))
-                            .foregroundStyle(selected ? AppTheme.ocean : .secondary)
-                            .clipShape(Capsule())
+                        Label(type.rawValue.capitalized, systemImage: icon(for: type))
+                            .labelStyle(.titleAndIcon)
+                            .font(.subheadline.weight(.medium))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(
+                                Capsule().fill(selected ? AppTheme.accent : Color(.secondarySystemFill))
+                            )
+                            .foregroundStyle(selected ? Color.white : Color.primary)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityAddTraits(selected ? .isSelected : [])
                 }
             }
+            .padding(.vertical, 2)
+        }
+    }
+
+    private func icon(for type: FileType) -> String {
+        switch type {
+        case .image: return "photo"
+        case .pdf: return "doc.richtext"
+        case .text: return "doc.text"
+        case .code: return "curlybraces"
+        case .audio: return "waveform"
+        case .unknown: return "questionmark"
         }
     }
 }

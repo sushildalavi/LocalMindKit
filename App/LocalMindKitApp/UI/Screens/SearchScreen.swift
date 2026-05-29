@@ -36,11 +36,19 @@ struct SearchScreen: View {
                     } else if viewModel.query.isEmpty {
                         ContentUnavailableView("Search Your Local Index", systemImage: "magnifyingglass.circle", description: Text("Type a phrase from a screenshot or imported PDF."))
                     } else {
+                        HStack {
+                            Text("^[\(viewModel.results.count) result](inflect: true)")
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
                         List(viewModel.results) { hit in
                             ResultCard(hit: hit)
-                            .listRowBackground(Color.white.opacity(0.85))
-                            .accessibilityElement(children: .combine)
-                            .accessibilityLabel("\(hit.displayName), \(hit.fileType.rawValue), relevance \(String(format: "%.2f", hit.score))")
+                                .listRowBackground(AppTheme.cardSurface)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("\(hit.displayName), \(hit.fileType.rawValue), relevance \(String(format: "%.2f", hit.score))")
                         }
                         .scrollContentBackground(.hidden)
                         .listStyle(.plain)

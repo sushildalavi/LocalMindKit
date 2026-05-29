@@ -7,10 +7,11 @@ struct SearchInput: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(AppTheme.ocean)
+                .foregroundStyle(.secondary)
             TextField("Search screenshots and PDFs", text: $text)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .submitLabel(.search)
                 .onChange(of: text) { _, _ in onChange() }
             if !text.isEmpty {
                 Button {
@@ -18,13 +19,21 @@ struct SearchInput: View {
                     onChange()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.tertiary)
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
             }
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .padding(.vertical, 11)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color(.separator).opacity(0.4), lineWidth: 0.5)
+        )
     }
 }

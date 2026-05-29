@@ -11,49 +11,86 @@ struct IndexScreen: View {
             ZStack {
                 AppTheme.pageGradient.ignoresSafeArea()
                 ScrollView {
-                    VStack(spacing: 14) {
-                        StatTile(label: "State", value: viewModel.state.rawValue.capitalized, symbol: "gauge.with.dots.needle.50percent")
-                        StatTile(label: "Files Indexed", value: "\(stats.files)", symbol: "doc.text")
-                        StatTile(label: "Chunks", value: "\(stats.chunks)", symbol: "text.quote")
-                        StatTile(label: "Photos Permission", value: permissionLabel(viewModel.photoAuthorization), symbol: "photo.on.rectangle")
+                    VStack(spacing: 16) {
+                        // Stats in a compact 2-column grid rather than a tall stack.
+                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12),
+                                            GridItem(.flexible(), spacing: 12)],
+                                  spacing: 12) {
+                            StatTile(label: "State", value: viewModel.state.rawValue.capitalized, symbol: "gauge.with.dots.needle.50percent")
+                            StatTile(label: "Files", value: "\(stats.files)", symbol: "doc.text")
+                            StatTile(label: "Chunks", value: "\(stats.chunks)", symbol: "text.quote")
+                            StatTile(label: "Photos", value: permissionLabel(viewModel.photoAuthorization), symbol: "photo.on.rectangle")
+                        }
 
+                        // Progress card.
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Progress")
                                 .font(.headline)
                             ProgressView(value: viewModel.total == 0 ? 0 : Double(viewModel.done), total: Double(max(viewModel.total, 1)))
-                            Text("\(viewModel.done) / \(viewModel.total)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            if let current = viewModel.currentItemID {
-                                Text("Current: \(current)")
-                                    .font(.caption)
+                                .tint(AppTheme.accent)
+                            HStack {
+                                Text("\(viewModel.done) / \(viewModel.total)")
+                                    .font(.caption.monospacedDigit())
                                     .foregroundStyle(.secondary)
+                                Spacer()
+                                if let current = viewModel.currentItemID {
+                                    Text(current)
+                                        .font(.caption)
+                                        .foregroundStyle(.tertiary)
+                                        .lineLimit(1)
+                                }
                             }
                             Text(viewModel.summaryText)
                                 .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .lmkCard()
 
-                        HStack(spacing: 12) {
-                            Button("Run Index Demo") { viewModel.startMockRun() }
-                                .buttonStyle(.borderedProminent)
-                                .accessibilityLabel("Run index demo")
-                            Button("Stop") { viewModel.cancel() }
+                        // Primary actions, clear hierarchy: one prominent action,
+                        // the rest bordered. Permission prompt only when needed.
+                        VStack(spacing: 10) {
+                            Button {
+                                viewModel.ingestScreenshots()
+                            } label: {
+                                Label("Index Screenshots", systemImage: "photo.stack")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+
+                            Button {
+                                importing = true
+                            } label: {
+                                Label("Import Document", systemImage: "doc.badge.plus")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
+
+                            if viewModel.photoAuthorization == .notDetermined || viewModel.photoAuthorization == .denied {
+                                Button {
+                                    viewModel.requestPhotoAccess()
+                                } label: {
+                                    Label("Allow Photos Access", systemImage: "lock.open")
+                                        .frame(maxWidth: .infinity)
+                                }
                                 .buttonStyle(.bordered)
+                                .controlSize(.large)
+                            }
+                        }
+
+                        // Demo/dev affordance, de-emphasized at the bottom.
+                        HStack(spacing: 12) {
+                            Button("Run Demo") { viewModel.startMockRun() }
+                                .accessibilityLabel("Run index demo")
+                            Spacer()
+                            Button("Stop", role: .cancel) { viewModel.cancel() }
                                 .accessibilityLabel("Stop indexing")
                         }
-                        Button("Index Screenshots") {
-                            viewModel.ingestScreenshots()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        Button("Request Photos Access") {
-                            viewModel.requestPhotoAccess()
-                        }
-                        .buttonStyle(.bordered)
-                        Button("Import Document") {
-                            importing = true
-                        }
-                        .buttonStyle(.borderedProminent)
+                        .font(.subheadline)
+                        .tint(AppTheme.accent)
+                        .padding(.top, 4)
                     }
                     .padding(16)
                     .animation(Animations.smoothInOut, value: viewModel.done)

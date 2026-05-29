@@ -6,24 +6,24 @@ struct StatTile: View {
     let symbol: String
 
     var body: some View {
-        HStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             Image(systemName: symbol)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(AppTheme.ocean)
-                .frame(width: 34, height: 34)
-                .background(AppTheme.mint.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(AppTheme.accent)
+                .frame(width: 30, height: 30)
+                .background(AppTheme.accent.opacity(0.12),
+                            in: RoundedRectangle(cornerRadius: 9, style: .continuous))
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(label)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(value)
-                    .font(.headline)
-                    .foregroundStyle(AppTheme.ink)
-            }
-            Spacer()
+            Text(value)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(AppTheme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .lmkCard()
     }
 }
