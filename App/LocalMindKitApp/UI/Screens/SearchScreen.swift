@@ -46,6 +46,13 @@ struct SearchScreen: View {
             }
             .navigationTitle("LocalMindKit")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("LocalMindKit")
+                        .font(Typography.section)
+                        .foregroundStyle(AppTheme.ink)
+                }
+            }
         }
     }
 }
