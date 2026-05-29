@@ -16,14 +16,19 @@ final class DeletionTests: XCTestCase {
             Chunk(fileID: fileID, ordinal: 0, text: "privacy first local indexing", charStart: 0, charEnd: 27, source: .pdf),
         ])
 
-        XCTAssertEqual(try await db.fileCount(), 1)
-        XCTAssertEqual(try await db.chunkCount(), 1)
+        let fileCountBeforeDelete = try await db.fileCount()
+        let chunkCountBeforeDelete = try await db.chunkCount()
+        XCTAssertEqual(fileCountBeforeDelete, 1)
+        XCTAssertEqual(chunkCountBeforeDelete, 1)
 
         try await db.deleteAll()
 
-        XCTAssertEqual(try await db.fileCount(), 0)
-        XCTAssertEqual(try await db.chunkCount(), 0)
+        let fileCountAfterDelete = try await db.fileCount()
+        let chunkCountAfterDelete = try await db.chunkCount()
+        XCTAssertEqual(fileCountAfterDelete, 0)
+        XCTAssertEqual(chunkCountAfterDelete, 0)
         let service = QueryService(db: db)
-        XCTAssertTrue(try await service.search("privacy").isEmpty)
+        let results = try await service.search("privacy")
+        XCTAssertTrue(results.isEmpty)
     }
 }
