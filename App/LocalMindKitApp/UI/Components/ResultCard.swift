@@ -11,6 +11,9 @@ struct ResultCard: View {
                     .font(.headline)
                     .lineLimit(1)
                 Spacer()
+                Image(systemName: icon(for: hit.fileType))
+                    .foregroundStyle(AppTheme.ocean)
+                Spacer().frame(width: 4)
                 Text(String(format: "%.2f", hit.score))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
@@ -29,5 +32,16 @@ struct ResultCard: View {
                 .clipShape(Capsule())
         }
         .padding(.vertical, 4)
+    }
+
+    private func icon(for type: FileType) -> String {
+        switch type {
+        case .image: return "photo"
+        case .pdf: return "doc.richtext"
+        case .text: return "doc.text"
+        case .code: return "curlybraces"
+        case .audio: return "waveform"
+        case .unknown: return "questionmark.square"
+        }
     }
 }
