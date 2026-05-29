@@ -1,4 +1,18 @@
+# Swift Package Manager
 .build/
+.swiftpm/
+Package.resolved
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.xcscmblueprint
+*.xccheckout
+
+# macOS
 .DS_Store
 
-.swiftpm/
+# Local scratch / generated artifacts
+.artifacts/
+*.sqlite3

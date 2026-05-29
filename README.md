@@ -1,5 +1,11 @@
 # LocalMindKit
 
+[![CI](https://github.com/sushildalavi/LocalMindKit/actions/workflows/ci.yml/badge.svg)](https://github.com/sushildalavi/LocalMindKit/actions/workflows/ci.yml)
+![Swift 6](https://img.shields.io/badge/Swift-6-orange.svg)
+![Platforms](https://img.shields.io/badge/platforms-iOS%2017%2B%20%7C%20macOS%2014%2B-blue.svg)
+![No network](https://img.shields.io/badge/network-none%20(test--enforced)-success.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Privacy-first iOS search for screenshots and imported PDFs — fully on-device.**
 
 LocalMindKit makes your screenshots and imported PDFs searchable by **text and
