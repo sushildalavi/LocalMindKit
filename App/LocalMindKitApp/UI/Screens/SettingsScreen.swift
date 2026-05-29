@@ -19,6 +19,11 @@ struct SettingsScreen: View {
                         LabeledContent("Network", value: "Off for core flows")
                     }
 
+                    Section("Documentation") {
+                        Link("Architecture", destination: URL(string: "https://github.com/sushildalavi/LocalMindKit/blob/main/docs/ARCHITECTURE.md")!)
+                        Link("Privacy", destination: URL(string: "https://github.com/sushildalavi/LocalMindKit/blob/main/docs/PRIVACY.md")!)
+                    }
+
                     if let error = viewModel.lastError {
                         Section("Diagnostics") {
                             Text(error)
