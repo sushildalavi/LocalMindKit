@@ -160,6 +160,29 @@ public actor Database {
         return n
     }
 
+    /// Fetch a single chunk by id. Backs the result-detail view, which shows
+    /// the full extracted text (the search snippet is FTS-truncated).
+    public func chunk(byID id: Int64) throws -> Chunk? {
+        var result: Chunk?
+        try conn.query("""
+            SELECT id, file_id, ordinal, text, char_start, char_end, source
+            FROM chunks WHERE id = ?;
+            """,
+            params: [.int(id)]
+        ) { row in
+            result = Chunk(
+                id: row.int(0),
+                fileID: row.int(1),
+                ordinal: Int(row.int(2)),
+                text: row.string(3),
+                charStart: Int(row.int(4)),
+                charEnd: Int(row.int(5)),
+                source: ChunkSource(rawValue: row.string(6)) ?? .plaintext
+            )
+        }
+        return result
+    }
+
     // MARK: - Keyword search (FTS5)
 
     /// Run an FTS5 MATCH query, returning ranked hits with highlighted snippets.

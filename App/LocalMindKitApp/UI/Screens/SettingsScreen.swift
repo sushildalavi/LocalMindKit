@@ -11,7 +11,6 @@ struct SettingsScreen: View {
                         .onChange(of: viewModel.prefersHaptics) { _, newValue in
                             Haptics.enabled = newValue
                         }
-                    Toggle("Larger result cards", isOn: $viewModel.prefersLargeCards)
                 } header: {
                     Text("Experience")
                 } footer: {

@@ -1,7 +1,8 @@
 import UIKit
 
-/// Lightweight haptic feedback helper. No-ops are cheap; callers don't need to
-/// hold generators. Respects a simple global toggle set from Settings.
+/// Lightweight haptic feedback helper. Main-actor isolated so the mutable
+/// `enabled` flag is concurrency-safe under Swift 6; all call sites are UI.
+@MainActor
 enum Haptics {
     static var enabled = true
 

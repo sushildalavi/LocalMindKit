@@ -26,6 +26,7 @@
 		BFB18BDF8F036169546D15DB /* TypeFilterChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB27C501B440435CDB9742 /* TypeFilterChips.swift */; };
 		C6B76F9CD289864BE37DA99B /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E182121868BC9648CCC06F59 /* Haptics.swift */; };
 		CDE7681BF130AFF081582C43 /* DocumentImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C545BCA5195D859656A29DBF /* DocumentImportSource.swift */; };
+		CFFB6278C7C6E7617483EFE9 /* ResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787236466BFA0032AAF77694 /* ResultDetailView.swift */; };
 		D00D461A8DC1E33F5CA9EEA5 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7956EB7CA1F01ECCF58B4EE0 /* SettingsScreen.swift */; };
 		D29EC6274BCBC0A47F4C6FEB /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD2D75F34FE7B628AF7B7395 /* SettingsViewModel.swift */; };
 		D4D203C7140E1D459D745450 /* LocalMindKitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB687978FBCAF92BA2CF080C /* LocalMindKitApp.swift */; };
@@ -52,6 +53,7 @@
 		491C2DCE8477497D202D1908 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		5D202C743ED83CB0C17EE07A /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		6845260CD1BB2AF6DD1F2D33 /* IndexingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingViewModel.swift; sourceTree = "<group>"; };
+		787236466BFA0032AAF77694 /* ResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultDetailView.swift; sourceTree = "<group>"; };
 		7956EB7CA1F01ECCF58B4EE0 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		84575AD7B9C4EBC69B9D2FE9 /* PrivacyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyViewModel.swift; sourceTree = "<group>"; };
 		94B9DBACBFAEE23BE723B748 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 			children = (
 				05544FA7510B61DFCE6491E3 /* IndexScreen.swift */,
 				069FEA36DD8792954815A95F /* PrivacyScreen.swift */,
+				787236466BFA0032AAF77694 /* ResultDetailView.swift */,
 				5D202C743ED83CB0C17EE07A /* RootTabView.swift */,
 				00FA9A5996AB83717DA51CF8 /* SearchScreen.swift */,
 				7956EB7CA1F01ECCF58B4EE0 /* SettingsScreen.swift */,
@@ -305,6 +308,7 @@
 				EF398A1FE542F09F5B83476F /* PrivacyViewModel.swift in Sources */,
 				2CE831A0A65BFF43AD923461 /* ProgressRing.swift in Sources */,
 				9B4D891A66F26DEB6AC3CF2B /* ResultCard.swift in Sources */,
+				CFFB6278C7C6E7617483EFE9 /* ResultDetailView.swift in Sources */,
 				B977B67F59E221DE3A386A92 /* RootTabView.swift in Sources */,
 				8E501BEFA75DB538CE702D9E /* SearchInput.swift in Sources */,
 				1D50A41E6AEDE200AB040EF1 /* SearchScreen.swift in Sources */,

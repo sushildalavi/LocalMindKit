@@ -37,11 +37,13 @@ struct TypeFilterChips: View {
                 .labelStyle(.titleAndIcon)
                 .font(.subheadline.weight(.medium))
                 .padding(.horizontal, Spacing.md)
-                .padding(.vertical, 7)
+                .padding(.vertical, Spacing.sm)
+                .frame(minHeight: 38)
                 .background(
                     Capsule().fill(selected ? AppTheme.accent : Color(.secondarySystemFill))
                 )
                 .foregroundStyle(selected ? Color.white : Color.primary)
+                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])

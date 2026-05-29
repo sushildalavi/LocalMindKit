@@ -47,9 +47,10 @@ enum AppTheme {
     )
     static let cardSurface = Color(.secondarySystemGroupedBackground)
 
-    /// Subtle brand gradient, used sparingly on hero surfaces only.
+    /// Brand gradient, used sparingly on hero surfaces only. Fully saturated
+    /// stops (no opacity fade) so white text stays well above the contrast floor.
     static let brandGradient = LinearGradient(
-        colors: [Color.indigo, Color.indigo.opacity(0.75), Color.purple.opacity(0.85)],
+        colors: [Color.indigo, Color.purple],
         startPoint: .topLeading, endPoint: .bottomTrailing
     )
 }

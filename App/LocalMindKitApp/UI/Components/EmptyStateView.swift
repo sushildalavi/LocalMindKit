@@ -35,7 +35,7 @@ struct EmptyStateView: View {
                 VStack(spacing: Spacing.sm) {
                     Text("TRY")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.secondary)
                         .kerning(0.8)
                     ForEach(examples, id: \.self) { example in
                         Button {
@@ -52,8 +52,10 @@ struct EmptyStateView: View {
                                 Spacer(minLength: 0)
                                 Image(systemName: "arrow.up.left")
                                     .font(.caption)
-                                    .foregroundStyle(.tertiary)
+                                    .foregroundStyle(.secondary)
+                                    .accessibilityHidden(true)
                             }
+                            .frame(minHeight: 44)
                             .padding(.horizontal, Spacing.lg)
                             .padding(.vertical, Spacing.md)
                             .background(AppTheme.surface,

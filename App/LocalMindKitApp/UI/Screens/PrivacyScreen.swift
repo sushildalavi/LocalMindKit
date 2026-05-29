@@ -83,32 +83,33 @@ struct PrivacyScreen: View {
     private var explainer: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             SectionHeader("What's stored on device")
-            row(icon: "checkmark.circle.fill", tint: .green,
-                title: "Extracted text chunks",
+            row(stored: true, title: "Extracted text chunks",
                 detail: "The searchable text from your screenshots and PDFs.")
-            row(icon: "checkmark.circle.fill", tint: .green,
-                title: "SHA-256 hashes",
+            row(stored: true, title: "SHA-256 hashes",
                 detail: "Used for deduplication and change detection.")
             Divider().padding(.vertical, 2)
-            row(icon: "xmark.circle.fill", tint: .red,
-                title: "Raw images & PDF bytes",
+            row(stored: false, title: "Raw images & PDF bytes",
                 detail: "Never copied into the index database.")
-            row(icon: "xmark.circle.fill", tint: .red,
-                title: "Anything off-device",
+            row(stored: false, title: "Anything off-device",
                 detail: "No uploads, analytics, or telemetry.")
         }
         .lmkCard()
     }
 
-    private func row(icon: String, tint: Color, title: String, detail: String) -> some View {
+    private func row(stored: Bool, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: Spacing.md) {
-            Image(systemName: icon).foregroundStyle(tint).font(.body)
-            VStack(alignment: .leading, spacing: 1) {
+            Image(systemName: stored ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .foregroundStyle(stored ? .green : .red)
+                .font(.body)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: Spacing.xs / 2) {
                 Text(title).font(.subheadline.weight(.medium))
                 Text(detail).font(.caption).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(stored ? "Stored on device" : "Not stored"): \(title). \(detail)")
     }
 
     // MARK: - Danger zone

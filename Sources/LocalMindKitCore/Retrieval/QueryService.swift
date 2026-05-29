@@ -41,6 +41,11 @@ public struct QueryService: Sendable {
         self.db = db
     }
 
+    /// Fetch the full chunk behind a result (the search snippet is truncated).
+    public func fullChunk(_ id: Int64) async throws -> Chunk? {
+        try await db.chunk(byID: id)
+    }
+
     public func search(_ query: String, options: SearchOptions = .init()) async throws -> [SearchResult] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }

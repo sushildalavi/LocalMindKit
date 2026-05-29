@@ -29,6 +29,7 @@ struct IndexScreen: View {
                     .animation(Animations.spring, value: viewModel.done)
                     .animation(Animations.spring, value: viewModel.state)
                 }
+                .refreshable { stats = await viewModel.refreshStats() }
             }
             .navigationTitle("Library")
             .fileImporter(
@@ -66,7 +67,7 @@ struct IndexScreen: View {
                 if isBusy {
                     Text("\(viewModel.done) of \(viewModel.total)")
                         .font(.caption.monospacedDigit())
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
@@ -165,23 +166,27 @@ struct IndexScreen: View {
         }
     }
 
-    // MARK: - Demo
+    // MARK: - Demo (debug builds only)
 
+    @ViewBuilder
     private var demoControls: some View {
+        #if DEBUG
         HStack {
             Text("Developer")
                 .font(.caption2.weight(.semibold))
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.secondary)
             Spacer()
             Button("Run Demo") {
                 Haptics.tap()
                 viewModel.startMockRun()
             }
             .font(.subheadline)
+            .frame(minHeight: 44)
             .tint(AppTheme.accent)
             .disabled(isBusy)
         }
         .padding(.top, Spacing.xs)
+        #endif
     }
 
     private func permissionLabel(_ status: PHAuthorizationStatus) -> String {
