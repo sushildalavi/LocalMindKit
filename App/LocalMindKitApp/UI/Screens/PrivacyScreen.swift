@@ -13,7 +13,7 @@ struct PrivacyScreen: View {
                         StatTile(label: "Stored Chunks", value: "\(viewModel.totalChunks)", symbol: "text.alignleft")
                         StatTile(
                             label: "Last Refresh",
-                            value: viewModel.lastRefresh?.formatted(date: .abbreviated, time: .shortened) ?? "Never",
+                            value: viewModel.lastRefresh.map { Formatters.shortDateTime.string(from: $0) } ?? "Never",
                             symbol: "clock"
                         )
 
