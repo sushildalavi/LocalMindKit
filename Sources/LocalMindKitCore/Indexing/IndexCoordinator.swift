@@ -18,11 +18,13 @@ public struct IndexSummary: Sendable, Equatable {
     public var indexed: Int
     public var skipped: Int
     public var failed: Int
+    public var currentExternalID: String?
 
-    public init(indexed: Int = 0, skipped: Int = 0, failed: Int = 0) {
+    public init(indexed: Int = 0, skipped: Int = 0, failed: Int = 0, currentExternalID: String? = nil) {
         self.indexed = indexed
         self.skipped = skipped
         self.failed = failed
+        self.currentExternalID = currentExternalID
     }
 }
 
@@ -69,7 +71,7 @@ public actor IndexCoordinator {
                 summary.skipped += result.skipped
                 summary.failed += result.failed
                 if let progress {
-                    await progress(IndexProgress(done: done, total: items.count, currentExternalID: nil))
+                    await progress(IndexProgress(done: done, total: items.count, currentExternalID: result.currentExternalID))
                 }
 
                 guard !Task.isCancelled else {
@@ -93,7 +95,7 @@ public actor IndexCoordinator {
             let payload = try resolveData(for: item)
             let hash = Hashing.sha256(payload)
             if let existing = try await db.existingHash(externalID: item.externalID), existing == hash {
-                return .init(indexed: 0, skipped: 1, failed: 0)
+                return .init(indexed: 0, skipped: 1, failed: 0, currentExternalID: item.externalID)
             }
 
             let extracted = try extractText(item: item, data: payload)
@@ -110,7 +112,7 @@ public actor IndexCoordinator {
             ))
             let chunks = chunker.chunk(extracted, fileID: fileID, source: sourceForType(item.fileType))
             try await db.insertChunks(chunks)
-            return .init(indexed: 1, skipped: 0, failed: 0)
+            return .init(indexed: 1, skipped: 0, failed: 0, currentExternalID: item.externalID)
         } catch is CancellationError {
             throw CancellationError()
         } catch {
@@ -125,7 +127,7 @@ public actor IndexCoordinator {
                 indexedAt: Date(),
                 status: .failed
             ))
-            return .init(indexed: 0, skipped: 0, failed: 1)
+            return .init(indexed: 0, skipped: 0, failed: 1, currentExternalID: item.externalID)
         }
     }
 
