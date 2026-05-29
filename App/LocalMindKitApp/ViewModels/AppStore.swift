@@ -20,7 +20,7 @@ final class AppStore {
 
                 search.configure(service: queryService)
                 indexing.configure(database: db, coordinator: coordinator)
-                privacy.configure(database: db)
+                privacy.configure(database: db, dbPath: dbURL.path)
             } catch {
                 settings.lastError = "Failed to open index: \(error.localizedDescription)"
             }

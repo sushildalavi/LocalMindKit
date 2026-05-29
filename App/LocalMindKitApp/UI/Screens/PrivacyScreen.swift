@@ -11,6 +11,7 @@ struct PrivacyScreen: View {
                     VStack(spacing: 14) {
                         StatTile(label: "Indexed Items", value: "\(viewModel.totalFiles)", symbol: "archivebox")
                         StatTile(label: "Stored Chunks", value: "\(viewModel.totalChunks)", symbol: "text.alignleft")
+                        StatTile(label: "Index Size", value: ByteCountFormatter.string(fromByteCount: viewModel.indexSizeBytes, countStyle: .file), symbol: "internaldrive")
                         StatTile(
                             label: "Last Refresh",
                             value: viewModel.lastRefresh.map { Formatters.shortDateTime.string(from: $0) } ?? "Never",

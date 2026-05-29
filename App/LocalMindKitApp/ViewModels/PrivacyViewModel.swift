@@ -13,9 +13,11 @@ final class PrivacyViewModel {
     var message: String?
 
     private var database: Database?
+    private var dbPath: String?
 
-    func configure(database: Database) {
+    func configure(database: Database, dbPath: String? = nil) {
         self.database = database
+        self.dbPath = dbPath
         Task { await refresh() }
     }
 
@@ -23,6 +25,10 @@ final class PrivacyViewModel {
         guard let database else { return }
         totalFiles = (try? await database.fileCount()) ?? 0
         totalChunks = (try? await database.chunkCount()) ?? 0
+        if let dbPath {
+            let attrs = try? FileManager.default.attributesOfItem(atPath: dbPath)
+            indexSizeBytes = (attrs?[.size] as? NSNumber)?.int64Value ?? 0
+        }
         lastRefresh = Date()
     }
 
