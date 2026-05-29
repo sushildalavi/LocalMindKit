@@ -1,6 +1,8 @@
 import SwiftUI
 import LocalMindKitCore
 
+/// Horizontal file-type filter bar with an "All" reset. Selected chips fill
+/// with the brand accent; the rest are quiet system fills.
 struct TypeFilterChips: View {
     @Binding var selection: Set<FileType>
 
@@ -8,28 +10,41 @@ struct TypeFilterChips: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: Spacing.sm) {
+                chip(label: "All", symbol: "square.grid.2x2",
+                     selected: selection.isEmpty) {
+                    selection.removeAll()
+                    Haptics.tap()
+                }
                 ForEach(allTypes, id: \.self) { type in
-                    let selected = selection.contains(type)
-                    Button {
-                        if selected { selection.remove(type) } else { selection.insert(type) }
-                    } label: {
-                        Label(type.rawValue.capitalized, systemImage: icon(for: type))
-                            .labelStyle(.titleAndIcon)
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(
-                                Capsule().fill(selected ? AppTheme.accent : Color(.secondarySystemFill))
-                            )
-                            .foregroundStyle(selected ? Color.white : Color.primary)
+                    chip(label: type.rawValue.capitalized,
+                         symbol: icon(for: type),
+                         selected: selection.contains(type)) {
+                        if selection.contains(type) { selection.remove(type) }
+                        else { selection.insert(type) }
+                        Haptics.tap()
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selected ? .isSelected : [])
                 }
             }
             .padding(.vertical, 2)
         }
+    }
+
+    @ViewBuilder
+    private func chip(label: String, symbol: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(label, systemImage: symbol)
+                .labelStyle(.titleAndIcon)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, 7)
+                .background(
+                    Capsule().fill(selected ? AppTheme.accent : Color(.secondarySystemFill))
+                )
+                .foregroundStyle(selected ? Color.white : Color.primary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func icon(for type: FileType) -> String {

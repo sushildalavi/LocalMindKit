@@ -1,21 +1,31 @@
 import SwiftUI
 
+/// The primary search field. Larger tap target, clear affordance, and a focus
+/// ring that uses the brand accent.
 struct SearchInput: View {
     @Binding var text: String
+    var placeholder: String = "Search screenshots and PDFs"
     let onChange: () -> Void
 
+    @FocusState private var focused: Bool
+
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: Spacing.md) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search screenshots and PDFs", text: $text)
+                .font(.body.weight(.medium))
+                .foregroundStyle(focused ? AppTheme.accent : .secondary)
+
+            TextField(placeholder, text: $text)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .submitLabel(.search)
+                .focused($focused)
                 .onChange(of: text) { _, _ in onChange() }
+
             if !text.isEmpty {
                 Button {
                     text = ""
+                    Haptics.tap()
                     onChange()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
@@ -23,17 +33,21 @@ struct SearchInput: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Clear search")
+                .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 11)
+        .padding(.horizontal, Spacing.lg)
+        .padding(.vertical, 13)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(.secondarySystemGroupedBackground))
+            RoundedRectangle(cornerRadius: Radius.md, style: .continuous)
+                .fill(AppTheme.surface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color(.separator).opacity(0.4), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: Radius.md, style: .continuous)
+                .strokeBorder(focused ? AppTheme.accent.opacity(0.6) : AppTheme.hairline.opacity(0.4),
+                              lineWidth: focused ? 1.5 : 0.5)
         )
+        .animation(.easeOut(duration: 0.18), value: focused)
+        .animation(.easeOut(duration: 0.18), value: text.isEmpty)
     }
 }

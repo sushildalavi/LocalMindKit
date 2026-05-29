@@ -4,67 +4,98 @@ import LocalMindKitCore
 struct SearchScreen: View {
     @Bindable var viewModel: SearchViewModel
 
+    private let examples = [
+        "apple job link",
+        "gpa transcript",
+        "kafka redis swift",
+        "distributed systems",
+    ]
+
     var body: some View {
         NavigationStack {
             ZStack {
-                AppTheme.pageGradient.ignoresSafeArea()
-                VStack(spacing: 16) {
-                    Text("On-device text and phrase search across screenshots and imported PDFs.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    SearchInput(text: $viewModel.query) {
-                        viewModel.runSearchDebounced()
-                    }
-                    .accessibilityLabel("Search input")
-                    TypeFilterChips(selection: $viewModel.selectedTypes)
-                        .accessibilityLabel("File type filters")
+                AppTheme.background.ignoresSafeArea()
 
-                    if viewModel.isSearching {
-                        ProgressView("Searching on device…")
-                    }
-
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                            .font(.footnote)
-                            .foregroundStyle(.red)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
-                    if viewModel.results.isEmpty, !viewModel.query.isEmpty, !viewModel.isSearching {
-                        ContentUnavailableView("No results", systemImage: "doc.text.magnifyingglass", description: Text("Try shorter keywords or remove filters."))
-                    } else if viewModel.query.isEmpty {
-                        ContentUnavailableView("Search Your Local Index", systemImage: "magnifyingglass.circle", description: Text("Type a phrase from a screenshot or imported PDF."))
-                    } else {
-                        HStack {
-                            Text("^[\(viewModel.results.count) result](inflect: true)")
-                                .font(.footnote.weight(.medium))
-                                .foregroundStyle(.secondary)
-                            Spacer()
+                VStack(spacing: Spacing.md) {
+                    // Pinned search controls.
+                    VStack(spacing: Spacing.md) {
+                        SearchInput(text: $viewModel.query) {
+                            viewModel.runSearchDebounced()
                         }
-                        List(viewModel.results) { hit in
-                            ResultCard(hit: hit)
-                                .listRowBackground(AppTheme.cardSurface)
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                                .accessibilityElement(children: .combine)
-                                .accessibilityLabel("\(hit.displayName), \(hit.fileType.rawValue), relevance \(String(format: "%.2f", hit.score))")
-                        }
-                        .scrollContentBackground(.hidden)
-                        .listStyle(.plain)
+                        .accessibilityLabel("Search input")
+
+                        TypeFilterChips(selection: $viewModel.selectedTypes)
+                            .accessibilityLabel("File type filters")
                     }
+                    .padding(.horizontal, Spacing.lg)
+                    .padding(.top, Spacing.sm)
+
+                    content
                 }
-                .padding(16)
             }
-            .navigationTitle("LocalMindKit")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("LocalMindKit")
-                        .font(Typography.section)
-                        .foregroundStyle(AppTheme.ink)
-                }
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.large)
+            .onChange(of: viewModel.selectedTypes) { _, _ in
+                viewModel.runSearchDebounced()
             }
         }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if let error = viewModel.errorMessage, !viewModel.isSearching {
+            Spacer()
+            EmptyStateView(symbol: "exclamationmark.triangle",
+                           title: "Search Error",
+                           message: error)
+            Spacer()
+        } else if viewModel.query.isEmpty {
+            ScrollView {
+                EmptyStateView(
+                    symbol: "sparkle.magnifyingglass",
+                    title: "Search Your Local Index",
+                    message: "Find text inside your screenshots and imported PDFs — instantly, and entirely on-device.",
+                    examples: examples,
+                    onExampleTap: { example in
+                        viewModel.query = example
+                        viewModel.runSearchDebounced()
+                    }
+                )
+            }
+        } else if viewModel.results.isEmpty, !viewModel.isSearching {
+            Spacer()
+            EmptyStateView(symbol: "doc.text.magnifyingglass",
+                           title: "No Results",
+                           message: "Try shorter keywords or remove a filter.")
+            Spacer()
+        } else {
+            resultsList
+        }
+    }
+
+    private var resultsList: some View {
+        ScrollView {
+            LazyVStack(spacing: Spacing.md) {
+                HStack {
+                    Text("^[\(viewModel.results.count) result](inflect: true)")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
+                    if viewModel.isSearching {
+                        ProgressView().controlSize(.small)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, Spacing.lg)
+
+                ForEach(viewModel.results) { hit in
+                    ResultCard(hit: hit)
+                        .padding(.horizontal, Spacing.lg)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("\(hit.displayName), \(hit.fileType.rawValue)")
+                }
+            }
+            .padding(.vertical, Spacing.sm)
+        }
+        .scrollDismissesKeyboard(.interactively)
     }
 }

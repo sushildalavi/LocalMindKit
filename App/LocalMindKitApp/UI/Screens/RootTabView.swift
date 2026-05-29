@@ -8,12 +8,12 @@ struct RootTabView: View {
             SearchScreen(viewModel: store.search)
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
             IndexScreen(viewModel: store.indexing)
-                .tabItem { Label("Index", systemImage: "square.stack.3d.up") }
+                .tabItem { Label("Library", systemImage: "square.stack.3d.up.fill") }
             PrivacyScreen(viewModel: store.privacy)
-                .tabItem { Label("Privacy", systemImage: "lock.shield") }
+                .tabItem { Label("Privacy", systemImage: "lock.shield.fill") }
             SettingsScreen(viewModel: store.settings)
-                .tabItem { Label("Settings", systemImage: "slider.horizontal.3") }
+                .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
-        .tint(AppTheme.ocean)
+        .tint(AppTheme.accent)
     }
 }

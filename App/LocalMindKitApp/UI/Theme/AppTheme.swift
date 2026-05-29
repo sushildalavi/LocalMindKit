@@ -1,53 +1,123 @@
 import SwiftUI
 
-/// Apple-native palette: lean on system semantic colors so everything adapts
-/// to light/dark mode and Increase-Contrast automatically. A single restrained
-/// accent (indigo) carries the brand; no decorative gradients or glassmorphism.
+// MARK: - Design tokens
+
+/// Consistent spacing scale (4-pt grid).
+enum Spacing {
+    static let xs: CGFloat = 4
+    static let sm: CGFloat = 8
+    static let md: CGFloat = 12
+    static let lg: CGFloat = 16
+    static let xl: CGFloat = 24
+    static let xxl: CGFloat = 32
+}
+
+/// Corner-radius scale.
+enum Radius {
+    static let sm: CGFloat = 10
+    static let md: CGFloat = 14
+    static let lg: CGFloat = 20
+    static let xl: CGFloat = 28
+}
+
+/// Palette: system semantic colors so everything adapts to light/dark and
+/// Increase-Contrast, with a single restrained brand accent (indigo).
 enum AppTheme {
-    /// Primary text. System-driven so it adapts to appearance + contrast.
     static let ink = Color.primary
-    /// The one accent color. Used for the tab tint, controls, and emphasis.
     static let accent = Color.indigo
-    /// Secondary accent for stat glyphs.
     static let accentSecondary = Color.teal
 
-    // Kept for source compatibility with existing call sites.
+    // Source-compat aliases used by older call sites.
     static let ocean = Color.indigo
     static let mint = Color.teal
     static let sand = Color(.tertiarySystemFill)
 
-    /// Page background. A near-flat blend of system grouped backgrounds —
-    /// subtle depth without looking like a marketing gradient. Adapts to mode.
+    static let background = Color(.systemGroupedBackground)
+    static let surface = Color(.secondarySystemGroupedBackground)
+    static let surfaceMuted = Color(.tertiarySystemGroupedBackground)
+    static let hairline = Color(.separator)
+
     static let pageGradient = LinearGradient(
         colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)],
-        startPoint: .top,
-        endPoint: .bottom
+        startPoint: .top, endPoint: .bottom
     )
-
-    /// Card surface color (used by `lmkCard`).
-    static let cardSurface = Color(.secondarySystemGroupedBackground)
-    // Kept for source compatibility; resolves to the flat card surface.
     static let cardGradient = LinearGradient(
         colors: [Color(.secondarySystemGroupedBackground), Color(.secondarySystemGroupedBackground)],
-        startPoint: .top,
-        endPoint: .bottom
+        startPoint: .top, endPoint: .bottom
+    )
+    static let cardSurface = Color(.secondarySystemGroupedBackground)
+
+    /// Subtle brand gradient, used sparingly on hero surfaces only.
+    static let brandGradient = LinearGradient(
+        colors: [Color.indigo, Color.indigo.opacity(0.75), Color.purple.opacity(0.85)],
+        startPoint: .topLeading, endPoint: .bottomTrailing
     )
 }
 
-/// A clean, Apple-style card: flat system surface, continuous corners, and a
-/// soft neutral shadow. No tinted glow, no glass.
+// MARK: - Card surface
+
+/// A clean, elevated card: flat system surface, continuous corners, hairline
+/// border, soft neutral shadow. No glassmorphism, no tinted glow.
 struct LMKCardStyle: ViewModifier {
+    var padding: CGFloat = Spacing.lg
     func body(content: Content) -> some View {
         content
-            .padding(16)
+            .padding(padding)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(AppTheme.cardSurface)
+                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
+                    .fill(AppTheme.surface)
             )
-            .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 3)
+            .overlay(
+                RoundedRectangle(cornerRadius: Radius.lg, style: .continuous)
+                    .strokeBorder(AppTheme.hairline.opacity(0.35), lineWidth: 0.5)
+            )
+            .shadow(color: .black.opacity(0.05), radius: 12, x: 0, y: 4)
     }
 }
 
 extension View {
-    func lmkCard() -> some View { modifier(LMKCardStyle()) }
+    func lmkCard(padding: CGFloat = Spacing.lg) -> some View {
+        modifier(LMKCardStyle(padding: padding))
+    }
+}
+
+// MARK: - Button styles
+
+/// Full-width prominent action with a subtle press scale.
+struct PrimaryButtonStyle: ButtonStyle {
+    var tint: Color = AppTheme.accent
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .foregroundStyle(.white)
+            .background(tint.opacity(configuration.isPressed ? 0.85 : 1),
+                        in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+/// Full-width secondary action on a tinted fill.
+struct SecondaryButtonStyle: ButtonStyle {
+    var tint: Color = AppTheme.accent
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .foregroundStyle(tint)
+            .background(tint.opacity(configuration.isPressed ? 0.18 : 0.12),
+                        in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+extension ButtonStyle where Self == PrimaryButtonStyle {
+    static var primary: PrimaryButtonStyle { PrimaryButtonStyle() }
+}
+extension ButtonStyle where Self == SecondaryButtonStyle {
+    static var secondary: SecondaryButtonStyle { SecondaryButtonStyle() }
 }

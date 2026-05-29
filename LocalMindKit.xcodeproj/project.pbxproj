@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		000D016DC2AE6420CB17D4CC /* LocalMindKitCore in Frameworks */ = {isa = PBXBuildFile; productRef = 05112E12BABA12DB99EA31D4 /* LocalMindKitCore */; };
+		0F14F941FA5D688177818B2F /* IconTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD2DCEC495DA469D8B4C92B /* IconTile.swift */; };
 		1D50A41E6AEDE200AB040EF1 /* SearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FA9A5996AB83717DA51CF8 /* SearchScreen.swift */; };
+		1F747E27845B88D6F0F4C25B /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491C2DCE8477497D202D1908 /* EmptyStateView.swift */; };
+		2CE831A0A65BFF43AD923461 /* ProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FE155F5C6BED84FD6B7A1D /* ProgressRing.swift */; };
 		32226D4F8AC3B35A98370764 /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = A72AC114812BBB54800470B0 /* Animations.swift */; };
 		4AE3D10D10F3FC8851281016 /* PrivacyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069FEA36DD8792954815A95F /* PrivacyScreen.swift */; };
-		4F4A0FA16EC3CCBD50CB8720 /* StatTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C023E660433CDF8B7B53DAC1 /* StatTile.swift */; };
 		5CDA0E0AA20F399AA866987C /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E053469C2DD7CB9859AC37E4 /* AppStore.swift */; };
 		6409F6A1C1CA059A414ACF26 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 98BE2B2F56D41C7512D1B86B /* README.md */; };
 		8E501BEFA75DB538CE702D9E /* SearchInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE73A529234F3ECCE2BB2EA /* SearchInput.swift */; };
@@ -22,11 +24,14 @@
 		B8E1C77260F3FD686E5E34B0 /* IndexingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845260CD1BB2AF6DD1F2D33 /* IndexingViewModel.swift */; };
 		B977B67F59E221DE3A386A92 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D202C743ED83CB0C17EE07A /* RootTabView.swift */; };
 		BFB18BDF8F036169546D15DB /* TypeFilterChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB27C501B440435CDB9742 /* TypeFilterChips.swift */; };
+		C6B76F9CD289864BE37DA99B /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E182121868BC9648CCC06F59 /* Haptics.swift */; };
 		CDE7681BF130AFF081582C43 /* DocumentImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C545BCA5195D859656A29DBF /* DocumentImportSource.swift */; };
 		D00D461A8DC1E33F5CA9EEA5 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7956EB7CA1F01ECCF58B4EE0 /* SettingsScreen.swift */; };
 		D29EC6274BCBC0A47F4C6FEB /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD2D75F34FE7B628AF7B7395 /* SettingsViewModel.swift */; };
 		D4D203C7140E1D459D745450 /* LocalMindKitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB687978FBCAF92BA2CF080C /* LocalMindKitApp.swift */; };
 		E530291A4CECC57D18E09D59 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB7C8D9594E81BA81A0E16A /* SearchViewModel.swift */; };
+		E655A8A23C5155B47EC60C0D /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0612ECB874A2388C4D8BD2A8 /* MetricCard.swift */; };
+		E8812A105F7040BEFEDD7A46 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA1FBB4BD5B40BE4B2115BB /* SectionHeader.swift */; };
 		EF398A1FE542F09F5B83476F /* PrivacyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84575AD7B9C4EBC69B9D2FE9 /* PrivacyViewModel.swift */; };
 		F5531E01744C59A463E22881 /* IndexScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05544FA7510B61DFCE6491E3 /* IndexScreen.swift */; };
 		F659D71BA951A4C0725FAAD3 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276784A71AE471C9E335794C /* AppTheme.swift */; };
@@ -35,12 +40,16 @@
 /* Begin PBXFileReference section */
 		00FA9A5996AB83717DA51CF8 /* SearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreen.swift; sourceTree = "<group>"; };
 		05544FA7510B61DFCE6491E3 /* IndexScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexScreen.swift; sourceTree = "<group>"; };
+		0612ECB874A2388C4D8BD2A8 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
 		069FEA36DD8792954815A95F /* PrivacyScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyScreen.swift; sourceTree = "<group>"; };
 		14E8D9DDA31AC2E9B5C93051 /* LocalMindKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LocalMindKit; path = .; sourceTree = SOURCE_ROOT; };
 		18657033E63A4DCAE8150C34 /* PhotoLibrarySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySource.swift; sourceTree = "<group>"; };
+		1AA1FBB4BD5B40BE4B2115BB /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		276784A71AE471C9E335794C /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		2784E828583A47B8DE2124DA /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		40EB27C501B440435CDB9742 /* TypeFilterChips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeFilterChips.swift; sourceTree = "<group>"; };
+		43FE155F5C6BED84FD6B7A1D /* ProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRing.swift; sourceTree = "<group>"; };
+		491C2DCE8477497D202D1908 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		5D202C743ED83CB0C17EE07A /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		6845260CD1BB2AF6DD1F2D33 /* IndexingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingViewModel.swift; sourceTree = "<group>"; };
 		7956EB7CA1F01ECCF58B4EE0 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
@@ -48,10 +57,11 @@
 		94B9DBACBFAEE23BE723B748 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		98BE2B2F56D41C7512D1B86B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A72AC114812BBB54800470B0 /* Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animations.swift; sourceTree = "<group>"; };
-		C023E660433CDF8B7B53DAC1 /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
 		C545BCA5195D859656A29DBF /* DocumentImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentImportSource.swift; sourceTree = "<group>"; };
+		CDD2DCEC495DA469D8B4C92B /* IconTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconTile.swift; sourceTree = "<group>"; };
 		DBE7644E84EAA9BA75A0BE68 /* ResultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultCard.swift; sourceTree = "<group>"; };
 		E053469C2DD7CB9859AC37E4 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		E182121868BC9648CCC06F59 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		E885030EC1841BBC0B0B7D2E /* LocalMindKitApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LocalMindKitApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECE73A529234F3ECCE2BB2EA /* SearchInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchInput.swift; sourceTree = "<group>"; };
 		FB687978FBCAF92BA2CF080C /* LocalMindKitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalMindKitApp.swift; sourceTree = "<group>"; };
@@ -77,6 +87,7 @@
 				A72AC114812BBB54800470B0 /* Animations.swift */,
 				276784A71AE471C9E335794C /* AppTheme.swift */,
 				2784E828583A47B8DE2124DA /* Formatters.swift */,
+				E182121868BC9648CCC06F59 /* Haptics.swift */,
 				94B9DBACBFAEE23BE723B748 /* Typography.swift */,
 			);
 			path = Theme;
@@ -145,9 +156,13 @@
 		88DC01F64CC33A1AD22226D1 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				491C2DCE8477497D202D1908 /* EmptyStateView.swift */,
+				CDD2DCEC495DA469D8B4C92B /* IconTile.swift */,
+				0612ECB874A2388C4D8BD2A8 /* MetricCard.swift */,
+				43FE155F5C6BED84FD6B7A1D /* ProgressRing.swift */,
 				DBE7644E84EAA9BA75A0BE68 /* ResultCard.swift */,
 				ECE73A529234F3ECCE2BB2EA /* SearchInput.swift */,
-				C023E660433CDF8B7B53DAC1 /* StatTile.swift */,
+				1AA1FBB4BD5B40BE4B2115BB /* SectionHeader.swift */,
 				40EB27C501B440435CDB9742 /* TypeFilterChips.swift */,
 			);
 			path = Components;
@@ -277,21 +292,26 @@
 				5CDA0E0AA20F399AA866987C /* AppStore.swift in Sources */,
 				F659D71BA951A4C0725FAAD3 /* AppTheme.swift in Sources */,
 				CDE7681BF130AFF081582C43 /* DocumentImportSource.swift in Sources */,
+				1F747E27845B88D6F0F4C25B /* EmptyStateView.swift in Sources */,
 				9EF072A6941BE4CBD5772A08 /* Formatters.swift in Sources */,
+				C6B76F9CD289864BE37DA99B /* Haptics.swift in Sources */,
+				0F14F941FA5D688177818B2F /* IconTile.swift in Sources */,
 				F5531E01744C59A463E22881 /* IndexScreen.swift in Sources */,
 				B8E1C77260F3FD686E5E34B0 /* IndexingViewModel.swift in Sources */,
 				D4D203C7140E1D459D745450 /* LocalMindKitApp.swift in Sources */,
+				E655A8A23C5155B47EC60C0D /* MetricCard.swift in Sources */,
 				93CBF4FCDFD0E196DFA7AB32 /* PhotoLibrarySource.swift in Sources */,
 				4AE3D10D10F3FC8851281016 /* PrivacyScreen.swift in Sources */,
 				EF398A1FE542F09F5B83476F /* PrivacyViewModel.swift in Sources */,
+				2CE831A0A65BFF43AD923461 /* ProgressRing.swift in Sources */,
 				9B4D891A66F26DEB6AC3CF2B /* ResultCard.swift in Sources */,
 				B977B67F59E221DE3A386A92 /* RootTabView.swift in Sources */,
 				8E501BEFA75DB538CE702D9E /* SearchInput.swift in Sources */,
 				1D50A41E6AEDE200AB040EF1 /* SearchScreen.swift in Sources */,
 				E530291A4CECC57D18E09D59 /* SearchViewModel.swift in Sources */,
+				E8812A105F7040BEFEDD7A46 /* SectionHeader.swift in Sources */,
 				D00D461A8DC1E33F5CA9EEA5 /* SettingsScreen.swift in Sources */,
 				D29EC6274BCBC0A47F4C6FEB /* SettingsViewModel.swift in Sources */,
-				4F4A0FA16EC3CCBD50CB8720 /* StatTile.swift in Sources */,
 				BFB18BDF8F036169546D15DB /* TypeFilterChips.swift in Sources */,
 				8EF6CAC80D5BB39FECB0F5E8 /* Typography.swift in Sources */,
 			);
@@ -309,8 +329,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "LocalMindKit reads your screenshots to index their text on-device so you can search them. Nothing leaves your device.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -387,8 +409,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "LocalMindKit reads your screenshots to index their text on-device so you can search them. Nothing leaves your device.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
