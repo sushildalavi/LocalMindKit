@@ -41,6 +41,8 @@ struct IndexScreen: View {
                         }
                     }
                     .padding(16)
+                    .animation(Animations.smoothInOut, value: viewModel.done)
+                    .animation(Animations.smoothInOut, value: viewModel.state)
                 }
             }
             .navigationTitle("Index")
