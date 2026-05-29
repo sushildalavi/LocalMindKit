@@ -1,0 +1,81 @@
+import Foundation
+import Observation
+import LocalMindKitCore
+
+@Observable
+@MainActor
+final class IndexingViewModel {
+    enum State: String {
+        case idle
+        case indexing
+        case complete
+        case cancelled
+        case failed
+    }
+
+    var state: State = .idle
+    var done = 0
+    var total = 0
+    var currentItemID: String?
+    var summaryText = "No indexing run yet."
+    var errorMessage: String?
+
+    private var database: Database?
+    private var coordinator: IndexCoordinator?
+    private var activeTask: Task<Void, Never>?
+
+    func configure(database: Database, coordinator: IndexCoordinator) {
+        self.database = database
+        self.coordinator = coordinator
+    }
+
+    func startMockRun() {
+        guard let coordinator else { return }
+        activeTask?.cancel()
+
+        let fixtureItems = [
+            IngestItem(externalID: "fixture-1", displayName: "Notes.txt", fileType: .text, sizeBytes: 58, data: Data("apple application tracker notes and deadlines".utf8)),
+            IngestItem(externalID: "fixture-2", displayName: "Roadmap.md", fileType: .text, sizeBytes: 64, data: Data("local indexing, sqlite fts, vision ocr progress".utf8)),
+        ]
+
+        state = .indexing
+        done = 0
+        total = fixtureItems.count
+        errorMessage = nil
+
+        activeTask = Task {
+            do {
+                let summary = try await coordinator.index(items: fixtureItems) { [weak self] progress in
+                    guard let self else { return }
+                    self.done = progress.done
+                    self.total = progress.total
+                    self.currentItemID = progress.currentExternalID
+                }
+                guard !Task.isCancelled else {
+                    state = .cancelled
+                    return
+                }
+                state = .complete
+                summaryText = "Indexed: \(summary.indexed), Skipped: \(summary.skipped), Failed: \(summary.failed)"
+            } catch is CancellationError {
+                state = .cancelled
+                summaryText = "Indexing was cancelled."
+            } catch {
+                state = .failed
+                errorMessage = error.localizedDescription
+                summaryText = "Indexing failed."
+            }
+        }
+    }
+
+    func cancel() {
+        activeTask?.cancel()
+    }
+
+    func refreshStats() async -> (files: Int, chunks: Int) {
+        guard let database else { return (0, 0) }
+        let files = (try? await database.fileCount()) ?? 0
+        let chunks = (try? await database.chunkCount()) ?? 0
+        return (files, chunks)
+    }
+}
