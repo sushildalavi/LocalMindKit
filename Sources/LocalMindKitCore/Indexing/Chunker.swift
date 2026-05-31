@@ -31,6 +31,11 @@ public struct Chunker: Sendable {
       sentences = [trimmed.startIndex..<trimmed.endIndex]
     }
 
+    // Split any single sentence longer than the target into index sub-ranges so
+    // code, URLs, or OCR text with few sentence breaks can't yield one oversize
+    // chunk. Normal sentences (<= target) pass through unchanged.
+    sentences = sentences.flatMap { Self.splitOversized($0, in: trimmed, max: targetChars) }
+
     var chunks: [Chunk] = []
     var ordinal = 0
     var current = ""
@@ -67,5 +72,25 @@ public struct Chunker: Sendable {
     }
     flush(end: trimmed.endIndex)
     return chunks
+  }
+
+  /// Break a sentence range longer than `max` characters into consecutive
+  /// sub-ranges of at most `max`. Operates on `String.Index` so the chunk
+  /// char offsets stay consistent with the source text.
+  static func splitOversized(_ range: Range<String.Index>, in text: String, max: Int)
+    -> [Range<String.Index>]
+  {
+    guard max > 0, text.distance(from: range.lowerBound, to: range.upperBound) > max else {
+      return [range]
+    }
+    var pieces: [Range<String.Index>] = []
+    var start = range.lowerBound
+    while text.distance(from: start, to: range.upperBound) > max {
+      let end = text.index(start, offsetBy: max)
+      pieces.append(start..<end)
+      start = end
+    }
+    if start < range.upperBound { pieces.append(start..<range.upperBound) }
+    return pieces
   }
 }
