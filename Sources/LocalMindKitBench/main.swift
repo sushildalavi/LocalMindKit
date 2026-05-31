@@ -172,7 +172,8 @@ private func runBenchmarks(config: BenchConfig) async throws {
   }
 
   let db = try Database(path: config.dbPath)
-  let coordinator = IndexCoordinator(db: db, chunker: .init(targetChars: 500, overlapChars: 50), maxConcurrent: 4)
+  let coordinator = IndexCoordinator(
+    db: db, chunker: .init(targetChars: 500, overlapChars: 50), maxConcurrent: 4)
   let queryService = QueryService(db: db)
 
   let corpus = syntheticCorpus(size: config.corpusSize)

@@ -2,7 +2,9 @@ import Foundation
 import SQLite3
 
 // SQLite wants to know whether a bound string/blob is transient (copy it)
-// or static (don't). We always pass transient to be safe.
+// or static (don't). We always pass transient to be safe. The name mirrors
+// the C macro `SQLITE_TRANSIENT` on purpose, so the casing rule is waived here.
+// swift-format-ignore: AlwaysUseLowerCamelCase
 let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 public enum SQLiteError: Error, CustomStringConvertible {
