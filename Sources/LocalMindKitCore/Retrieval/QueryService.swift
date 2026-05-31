@@ -5,11 +5,20 @@ public struct SearchOptions: Sendable {
   public var limit: Int
   public var fileTypes: Set<FileType>?  // nil == all types
   public var weights: RankWeights
+  /// When true, the trailing term matches by prefix (FTS5 `term*`) so results
+  /// update as the user types. Off by default to keep explicit searches exact.
+  public var prefixMatch: Bool
 
-  public init(limit: Int = 30, fileTypes: Set<FileType>? = nil, weights: RankWeights = .init()) {
+  public init(
+    limit: Int = 30,
+    fileTypes: Set<FileType>? = nil,
+    weights: RankWeights = .init(),
+    prefixMatch: Bool = false
+  ) {
     self.limit = limit
     self.fileTypes = fileTypes
     self.weights = weights
+    self.prefixMatch = prefixMatch
   }
 }
 
@@ -54,7 +63,7 @@ public struct QueryService: Sendable {
     let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return [] }
 
-    let matchQuery = Self.buildMatchQuery(from: trimmed)
+    let matchQuery = Self.buildMatchQuery(from: trimmed, prefix: options.prefixMatch)
     // Over-fetch so recency/type re-ranking still leaves a full page. The type
     // filter is applied in SQL so the limit is spent on matching rows.
     let typeFilter = options.fileTypes.map(Array.init)
@@ -89,13 +98,22 @@ public struct QueryService: Sendable {
 
   /// Build a safe FTS5 MATCH expression. We quote each term to avoid the
   /// user accidentally triggering FTS operators, and AND them together.
-  static func buildMatchQuery(from input: String) -> String {
-    let terms =
+  ///
+  /// When `prefix` is true, the final term becomes a prefix query (`"term"*`)
+  /// so an in-progress word ("inv" → "invoice") still matches. Earlier terms
+  /// stay exact, which keeps multi-word queries precise.
+  static func buildMatchQuery(from input: String, prefix: Bool = false) -> String {
+    let words =
       input
       .split(whereSeparator: { $0.isWhitespace })
       .map { $0.replacingOccurrences(of: "\"", with: "") }
       .filter { !$0.isEmpty }
-      .map { "\"\($0)\"" }
+    guard !words.isEmpty else { return "" }
+
+    let lastIndex = words.count - 1
+    let terms = words.enumerated().map { index, word -> String in
+      (prefix && index == lastIndex) ? "\"\(word)\"*" : "\"\(word)\""
+    }
     return terms.joined(separator: " AND ")
   }
 }
