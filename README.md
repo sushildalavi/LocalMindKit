@@ -54,11 +54,14 @@ QueryService → Ranker (keyword bm25 + recency + type; semantic = stubbed) ← 
 
 - **Persistence:** system SQLite + FTS5 via the C API (no third-party deps),
   behind a thin tested wrapper. Stores text **chunks** and SHA-256 hashes —
-  never raw image/PDF bytes.
+  never raw image/PDF bytes. WAL journaling with tuned pragmas (busy timeout,
+  in-memory temp store, page cache), `optimize()`/`vacuum()` maintenance, and
+  cheap stats (index size, per-type file counts) for the privacy dashboard.
 - **Retrieval:** FTS5 `MATCH` ordered by `bm25()`, with `snippet()`/`highlight()`
   for highlighted snippets. Hybrid-ready ranking (keyword + recency + type;
   semantic weight reserved for the embedding phase). Query terms are quoted and
-  AND-ed before `MATCH` to avoid FTS operator injection.
+  AND-ed before `MATCH` to avoid FTS operator injection, file-type filtering is
+  pushed into SQL, and an opt-in prefix mode supports as-you-type search.
 - **Concurrency:** an actor coordinator runs extraction in a bounded task group
   with cancellation, progress reporting, and incremental skip-unchanged via
   content hash.
@@ -79,10 +82,11 @@ See [`docs/PRIVACY.md`](docs/PRIVACY.md).
 
 ## Status
 
-- **Core engine:** implemented and host-tested — **18 passing XCTest cases**
-  (FTS5 search, chunking, ranking, deduplication, deletion, incremental
-  indexing, PDF/text extraction, query construction, and the network audit),
-  plus 1 OCR test skipped (needs a runtime Vision call).
+- **Core engine:** implemented and host-tested with an XCTest suite run on every
+  CI build (FTS5 search, chunking incl. oversize-sentence splitting, ranking,
+  deduplication, deletion, incremental indexing, PDF/text extraction incl. BOM
+  handling, prefix/type-filtered query construction, index stats, and the
+  network audit). One OCR test is skipped (needs a runtime Vision call).
 - **iOS app:** SwiftUI screens + view models + PhotoKit/document sources wired
   (`App/LocalMindKitApp`). Built and run on iPhone 16 simulator (iOS 26.5),
   with visual smoke testing for the search/detail/library/privacy flows.
@@ -134,8 +138,12 @@ swift run -c release LocalMindKitBench \
 
 ```bash
 swift build
-swift test          # 18 pass, 1 skipped (OCR)
+swift test          # full suite; 1 OCR case skipped (needs a runtime Vision call)
 ```
+
+> `swift test` needs the XCTest framework from a full Xcode install. With only
+> the Command Line Tools, `swift build` works but the test suite won't — CI runs
+> it on a macOS runner with Xcode.
 
 Run the iOS app (requires full Xcode):
 
