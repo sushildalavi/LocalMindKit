@@ -184,7 +184,7 @@ public actor Database {
   /// Number of indexed files grouped by type. Backs the library/privacy
   /// dashboard breakdown ("12 screenshots, 3 PDFs"). Types with no files are
   /// omitted from the result.
-  public func fileCounts(byType: Bool = true) throws -> [FileType: Int] {
+  public func fileCounts() throws -> [FileType: Int] {
     var counts: [FileType: Int] = [:]
     try conn.query("SELECT file_type, COUNT(*) FROM files GROUP BY file_type;") { row in
       let type = FileType(rawValue: row.string(0)) ?? .unknown
