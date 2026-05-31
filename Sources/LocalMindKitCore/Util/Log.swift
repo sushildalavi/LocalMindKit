@@ -12,15 +12,18 @@ import Foundation
     private static let logger = Logger(subsystem: "LocalMindKit", category: "core")
 
     public static func debug(_ message: @autoclosure () -> String) {
-      logger.debug("\(message(), privacy: .public)")
+      let text = message()
+      logger.debug("\(text, privacy: .public)")
     }
 
     public static func info(_ message: @autoclosure () -> String) {
-      logger.info("\(message(), privacy: .public)")
+      let text = message()
+      logger.info("\(text, privacy: .public)")
     }
 
     public static func error(_ message: @autoclosure () -> String) {
-      logger.error("\(message(), privacy: .public)")
+      let text = message()
+      logger.error("\(text, privacy: .public)")
     }
   }
 #else
