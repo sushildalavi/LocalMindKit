@@ -321,7 +321,8 @@ private func syntheticCorpus(size: Int) -> [IngestItem] {
 
 private func measureOCRIfPresent(_ directory: String?) throws -> BenchReport.MetricDistribution? {
   guard let directory else { return nil }
-  let urls = try sampleURLs(directory: directory, allowedExtensions: ["png", "jpg", "jpeg", "heic"])
+  let urls = try sampleURLs(
+    directory: directory, allowedExtensions: ["png", "jpg", "jpeg", "heic"])
   guard !urls.isEmpty else { return nil }
   let ocr = OCRExtractor()
   var times: [Double] = []
