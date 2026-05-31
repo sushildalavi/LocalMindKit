@@ -14,12 +14,13 @@ public struct TextExtractor: Sendable {
     return extractText(from: data)
   }
 
-  /// Try encodings most-likely-first. UTF-8 covers the vast majority; UTF-16
-  /// (BOM-tagged) and the single-byte fallbacks keep older exports readable
-  /// instead of silently dropping a file.
+  /// Try encodings most-likely-first. UTF-8 covers the vast majority; the
+  /// single-byte fallbacks keep legacy exports readable instead of silently
+  /// dropping a file. Order matters: a bare UTF-16 attempt would succeed on
+  /// almost any even-length data (producing garbage), so we deliberately rely
+  /// on the single-byte decoders, with Latin-1 as a never-fails backstop.
   private static func decode(_ data: Data) -> String {
     if let s = String(data: data, encoding: .utf8) { return s }
-    if let s = String(data: data, encoding: .utf16) { return s }
     if let s = String(data: data, encoding: .windowsCP1252) { return s }
     if let s = String(data: data, encoding: .isoLatin1) { return s }
     return ""
