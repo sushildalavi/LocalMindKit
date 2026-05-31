@@ -232,10 +232,11 @@ public actor Database {
 
   /// Run an FTS5 MATCH query, returning ranked hits with highlighted snippets.
   /// `bm25()` returns a cost (lower is better); we negate so higher = better.
-  func keywordSearch(matchQuery: String, limit: Int) throws -> [KeywordHit] {
+  func keywordSearch(matchQuery: String, limit: Int, fileTypes: [FileType]? = nil) throws
+    -> [KeywordHit]
+  {
     var hits: [KeywordHit] = []
-    try conn.query(
-      """
+    var sql = """
       SELECT
           c.id, c.file_id,
           f.external_id, f.display_name, f.file_type, f.modified_at,
@@ -245,11 +246,18 @@ public actor Database {
       JOIN chunks c ON c.id = chunks_fts.rowid
       JOIN files  f ON f.id = c.file_id
       WHERE chunks_fts MATCH ?
-      ORDER BY rank
-      LIMIT ?;
-      """,
-      params: [.text(matchQuery), .int(Int64(limit))]
-    ) { row in
+      """
+    var params: [SQLiteValue] = [.text(matchQuery)]
+    // Filter by file type in SQL so LIMIT applies after filtering. Placeholders
+    // are bound; the IN list is built from a closed enum, never raw user text.
+    if let fileTypes, !fileTypes.isEmpty {
+      let placeholders = Array(repeating: "?", count: fileTypes.count).joined(separator: ", ")
+      sql += "\n      AND f.file_type IN (\(placeholders))"
+      params.append(contentsOf: fileTypes.map { .text($0.rawValue) })
+    }
+    sql += "\n      ORDER BY rank\n      LIMIT ?;"
+    params.append(.int(Int64(limit)))
+    try conn.query(sql, params: params) { row in
       hits.append(
         KeywordHit(
           chunkID: row.int(0),

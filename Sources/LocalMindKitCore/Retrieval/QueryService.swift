@@ -55,14 +55,15 @@ public struct QueryService: Sendable {
     guard !trimmed.isEmpty else { return [] }
 
     let matchQuery = Self.buildMatchQuery(from: trimmed)
-    // Over-fetch so post-filtering/boosting still leaves a full page.
-    let raw = try await db.keywordSearch(matchQuery: matchQuery, limit: options.limit * 3)
+    // Over-fetch so recency/type re-ranking still leaves a full page. The type
+    // filter is applied in SQL so the limit is spent on matching rows.
+    let typeFilter = options.fileTypes.map(Array.init)
+    let raw = try await db.keywordSearch(
+      matchQuery: matchQuery, limit: options.limit * 3, fileTypes: typeFilter)
 
     let now = Date()
     var results: [SearchResult] = []
     for hit in raw {
-      if let types = options.fileTypes, !types.contains(hit.fileType) { continue }
-
       let kw = Ranker.normalizedKeyword(bm25: hit.bm25)
       let rec = Ranker.recency(modifiedAt: hit.modifiedAt, now: now)
       let typeBoost = 1.0  // placeholder until intent detection sets per-type boosts
