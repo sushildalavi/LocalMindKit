@@ -181,6 +181,29 @@ public actor Database {
     return n
   }
 
+  /// Number of indexed files grouped by type. Backs the library/privacy
+  /// dashboard breakdown ("12 screenshots, 3 PDFs"). Types with no files are
+  /// omitted from the result.
+  public func fileCounts(byType: Bool = true) throws -> [FileType: Int] {
+    var counts: [FileType: Int] = [:]
+    try conn.query("SELECT file_type, COUNT(*) FROM files GROUP BY file_type;") { row in
+      let type = FileType(rawValue: row.string(0)) ?? .unknown
+      counts[type, default: 0] += Int(row.int(1))
+    }
+    return counts
+  }
+
+  /// Logical size of the index file in bytes (`page_count * page_size`). Drives
+  /// the privacy dashboard's "index size" metric without stat-ing the sandbox.
+  /// Note: this is the main DB size; a pending WAL is reclaimed on checkpoint.
+  public func indexSizeBytes() throws -> Int64 {
+    var pageCount: Int64 = 0
+    var pageSize: Int64 = 0
+    try conn.query("PRAGMA page_count;") { row in pageCount = row.int(0) }
+    try conn.query("PRAGMA page_size;") { row in pageSize = row.int(0) }
+    return pageCount * pageSize
+  }
+
   /// Fetch a single chunk by id. Backs the result-detail view, which shows
   /// the full extracted text (the search snippet is FTS-truncated).
   public func chunk(byID id: Int64) throws -> Chunk? {
