@@ -8,19 +8,39 @@ reaches a tagged release.
 ## [Unreleased]
 
 ### Added
-- `.swift-format` configuration so formatting is deterministic and matches the
-  CI lint job.
-- `.editorconfig` for consistent whitespace across editors.
-- `SECURITY.md`, `CODE_OF_CONDUCT.md`, and a `CHANGELOG.md`.
-- `Makefile` with `build`, `test`, `format`, `lint`, and `bench` targets.
-- Dependabot configuration for GitHub Actions updates.
-- Issue templates for bug reports and feature requests.
+- Opt-in **prefix search** (`SearchOptions.prefixMatch`) for as-you-type queries
+  — only the trailing term becomes a prefix match, so multi-word queries stay
+  precise.
+- Database **maintenance ops**: `optimize()` (FTS5 optimize + `ANALYZE` + WAL
+  checkpoint) and `vacuum()`.
+- Database **stats** for the privacy dashboard: `indexSizeBytes()` and
+  per-type `fileCounts()`.
+- OCR **quality controls**: `minimumConfidence` and `minimumTextHeight` filters
+  so low-confidence/noise text doesn't pollute the index.
+- A tiny `Log` facade over `os.Logger` (no-op where `os` is unavailable);
+  indexing failures are now logged instead of silently swallowed.
+- Project hygiene: `.swift-format`, `.editorconfig`, `SECURITY.md`,
+  `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, a `Makefile`, Dependabot config, and
+  issue templates.
+- Expanded the XCTest suite (prefix search, oversize-sentence splitting, BOM
+  handling, index stats, and SQL-level type filtering).
 
 ### Changed
-- _Pending._
+- SQLite tuned with `busy_timeout`, `temp_store=MEMORY`, and a page cache pragma.
+- File-type filtering is now applied in SQL (`f.file_type IN (...)`) instead of
+  in Swift after over-fetching.
+- Text decoding order made predictable: UTF-8 → Windows-1252 → Latin-1 (the bare
+  UTF-16 attempt was dropped because it succeeds on almost any byte sequence).
+- CI hardened: least-privilege permissions, concurrency cancellation, manual
+  dispatch, and a pinned swift-format configuration.
 
 ### Fixed
-- _Pending._
+- Chunker now **hard-splits a single oversize sentence** so code/URLs/OCR text
+  with few sentence breaks can't produce one giant chunk.
+- Text extractor strips a leading UTF-8 BOM that would otherwise pollute the
+  first token and snippet.
+- PDF extractor skips locked/encrypted documents instead of returning a partial
+  or empty string ambiguously.
 
 ## History
 
