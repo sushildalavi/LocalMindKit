@@ -151,6 +151,24 @@ public actor Database {
     try conn.exec("INSERT INTO chunks_fts(chunks_fts) VALUES('delete-all');")
   }
 
+  // MARK: - Maintenance
+
+  /// Compact the FTS5 index and refresh query-planner statistics. Cheap to run
+  /// after a large indexing batch; keeps `bm25()` ranking and the query plan
+  /// healthy as the corpus grows. Also truncates the WAL so it doesn't grow
+  /// unbounded across long sessions.
+  public func optimize() throws {
+    try conn.exec("INSERT INTO chunks_fts(chunks_fts) VALUES('optimize');")
+    try conn.exec("ANALYZE;")
+    try conn.exec("PRAGMA wal_checkpoint(TRUNCATE);")
+  }
+
+  /// Rebuild the database file to reclaim space after large deletions (e.g. a
+  /// delete-all or many re-indexes). VACUUM cannot run inside a transaction.
+  public func vacuum() throws {
+    try conn.exec("VACUUM;")
+  }
+
   public func fileCount() throws -> Int {
     var n = 0
     try conn.query("SELECT COUNT(*) FROM files;") { row in n = Int(row.int(0)) }
