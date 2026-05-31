@@ -135,6 +135,9 @@ public actor IndexCoordinator {
     } catch is CancellationError {
       throw CancellationError()
     } catch {
+      // Record the failure (kept generic — no file content or paths) and mark
+      // the file failed so the dashboard can surface it without retrying.
+      Log.error("indexing failed for a \(item.fileType.rawValue): \(error)")
       _ = try? await db.upsertFile(
         IndexedFile(
           externalID: item.externalID,
