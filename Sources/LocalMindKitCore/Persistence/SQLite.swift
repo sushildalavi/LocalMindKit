@@ -39,6 +39,14 @@ final class SQLiteConnection {
     try exec("PRAGMA journal_mode=WAL;")
     try exec("PRAGMA synchronous=NORMAL;")
     try exec("PRAGMA foreign_keys=ON;")
+    // Wait up to 5s for a lock instead of failing immediately. WAL lets readers
+    // and a single writer coexist, but checkpoints and concurrent indexing can
+    // still briefly contend; a busy timeout keeps those transient and retried.
+    try exec("PRAGMA busy_timeout=5000;")
+    // Keep temp B-trees (FTS sorts, ORDER BY) off disk for snappier queries.
+    try exec("PRAGMA temp_store=MEMORY;")
+    // ~8 MB page cache (negative = KiB). Cheap on-device, fewer page faults.
+    try exec("PRAGMA cache_size=-8000;")
   }
 
   deinit { sqlite3_close_v2(handle) }
