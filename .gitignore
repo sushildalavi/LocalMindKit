@@ -4,6 +4,7 @@
 Package.resolved
 
 # Xcode
+*.xcodeproj/
 *.xcuserstate
 xcuserdata/
 DerivedData/
