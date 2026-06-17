@@ -6,7 +6,6 @@
 ![No network](https://img.shields.io/badge/network-none%20(test--enforced)-success.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Privacy-first iOS search for screenshots and imported PDFs — fully on-device.**
 
 LocalMindKit makes your screenshots and imported PDFs searchable by **text and
 phrase queries**. It extracts text on-device (Vision OCR for images, PDFKit for
