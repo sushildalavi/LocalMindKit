@@ -4,7 +4,7 @@ import XCTest
 
 @testable import LocalMindKitCore
 
-final class OCRSpikeTests: XCTestCase {
+final class OCRExtractorTests: XCTestCase {
   func testOCRExtractsKnownWordsFromRenderedImage() throws {
     let image = try XCTUnwrap(makeTestImage(text: "Apple LocalMindKit OCR Test"))
     let result = try OCRExtractor().recognizeText(in: image)
